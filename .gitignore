@@ -1,0 +1,7 @@
+venv/
+.env
+.vs/
+worklog.txt
+__pycache__/
+*.pyc
+*.sqlite
