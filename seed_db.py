@@ -19,379 +19,77 @@ def seed():
 
     # ── CATEGORIES ──
     categories = db.categories.insert_many([
-        { "name": "Dinner", "description": "Evening meals", "tags": ["hearty", "main course"] },
+        { "name": "Breakfast",  "description": "Morning meals",       "tags": ["quick", "morning"] },
+        { "name": "Lunch",      "description": "Midday meals",        "tags": ["light", "midday"] },
+        { "name": "Dinner",     "description": "Evening meals",       "tags": ["hearty", "main course"] },
+        { "name": "Dessert",    "description": "Sweet treats",        "tags": ["sweet", "baked"] },
+        { "name": "Snack",      "description": "Light bites",         "tags": ["quick", "small"] },
+        { "name": "Appetizer",  "description": "Starters and bites",  "tags": ["small", "starter"] },
+        { "name": "Comfort",    "description": "Comfort food",        "tags": ["hearty", "comfort"] },
     ]).inserted_ids
 
     # ── USERS ──
     users = db.users.insert_many([
-        {
-            "name": "Maria Santos",
-            "email": "maria@example.com",
-            "dietary_preferences": ["vegetarian", "gluten-free"],
-            "favorite_categories": [categories[0]],
-        },
-        def seedusers ():
-    users = [
-        {
-            "name": "Alice Johnson",
-            "email": "alice@gmail.com",
-            "dietpreferences": ["vegetarian"],
-            "favcategories": [],
-            "creationdate": datetime.utcnow()
-        },
-        {
-            "name": "Bob Smith",
-            "email": "bob@bobby.com",
-            "dietpreferences": ["high-protein"],
-            "favcategories": [],
-            "creationdate": datetime.utcnow()
-        },
-        {
-            "name": "Laura Palmer",
-            "email": "laurapalmer@twinpeaks.com",
-            "dietpreferences": ["gluten-free"],
-            "favcategories": [],
-            "creationdate": datetime.utcnow()
-        },
-        {
-            "name": "Dale Cooper",
-            "email": "dalecooper@fbi.gov",
-            "dietpreferences": ["low-carb"],
-            "favcategories": [],
-            "creationdate": datetime.utcnow()
-        },
-        {
-            "name": "Roger Huntington",
-            "email": "borntobleed@gmail.com",
-            "dietpreferences": ["high-protein"],
-            "favcategories": [],
-            "creationdate": datetime.utcnow()
-        },
-        {
-            "name": "John Doe",
-            "email": "john.doe@missing.com",
-            "dietpreferences": ["vegan"],
-            "favcategories": [],
-            "creationdate": datetime.utcnow()
-        },
-        {
-            "name": "John Wick",
-            "email": "john.wick@continental.com",
-            "dietpreferences": ["high-protein"],
-            "favcategories": [],
-            "creationdate": datetime.utcnow()
-        },
-        {
-            "name": "Stu Macher",
-            "email": "stu.macher@scarymovies.com",
-            "dietpreferences": ["low-carb"],
-            "favcategories": [],
-            "creationdate": datetime.utcnow()
-        },
-        {
-            "name": "Billy Loomis",
-            "email": "billy.loomis@scarymovies.com",
-            "dietpreferences": ["low-carb"],
-            "favcategories": [],
-            "creationdate": datetime.utcnow()
-        },
-        {
-            "name": "Silent Bob",
-            "email": "silentbob@viewaskew.com",
-            "dietpreferences": ["vegan"],
-            "favcategories": [],
-            "creationdate": datetime.utcnow()
-        },
-        {
-            "name": "Fox Mulder",
-            "email": "fox.mulder@fbi.gov",
-            "dietpreferences": ["mediterranean"],
-            "favcategories": [],
-            "creationdate": datetime.utcnow()
-        },
-        {
-            "name": "Ash Williams",
-            "email": "ash.williams@necronomicon.com",
-            "dietpreferences": ["paleo"],
-            "favcategories": [],
-            "creationdate": datetime.utcnow()
-        },
-        {
-            "name": "Vincent Vega",
-            "email": "vincent.vega@pulpfiction.com",
-            "dietpreferences": ["none"],
-            "favcategories": [],
-            "creationdate": datetime.utcnow()
-        },
-        {
-            "name": "Jules Winnfield",
-            "email": "jules.winnfield@pulpfiction.com",
-            "dietpreferences": ["none"],
-            "favcategories": [],
-            "creationdate": datetime.utcnow()
-        },
-        {
-            "name": "Charlie Dompler",
-            "email": "charlie.dompler@SmilingFriends.net",
-            "dietpreferences": ["vegan"],
-            "favcategories": [],
-            "creationdate": datetime.utcnow()
-        },
-        {
-            "name": "Pim Pimling",
-            "email": "pim.pimling@smilingfriends.net",
-            "dietpreferences": ["vegetarian"],
-            "favcategories": [],
-            "creationdate": datetime.utcnow()
-        },
-        {
-            "name": "Allan Red",
-            "email": "allan.red@smilingfriends.net",
-            "dietpreferences": ["high-protein"],
-            "favcategories": [],
-            "creationdate": datetime.utcnow()
-        },
-        {
-            "name": "Walter White",
-            "email": "walter.white@breakingbad.com",
-            "dietpreferences": ["high-protein"],
-            "favcategories": [],
-            "creationdate": datetime.utcnow()
-        },
-        {
-            "name": "Jesse Pinkman",
-            "email": "jesse.pinkman@breakingbad.com",
-            "dietpreferences": ["low-carb"],
-            "favcategories": [],
-            "creationdate": datetime.utcnow()
-        },
-        {
-            "name": "Dexter Morgan",
-            "email": "dexter.morgan@darkmatter.com",
-            "dietpreferences": ["paleo"],
-            "favcategories": [],
-            "creationdate": datetime.utcnow()
-        },
-        {
-            "name": "Sneakers O'Toole",
-            "email": "sneakers.otoole@gmail.com",
-            "dietpreferences": ["none"],
-            "favcategories": [],
-            "creationdate": datetime.utcnow()
-        },
-        {
-            "name": "Dio Brando",
-            "email": "dio.brando@gmail.com",
-            "dietpreferences": ["none"],
-            "favcategories": [],
-            "creationdate": datetime.utcnow()
-        },
-        {
-            "name": "Dan Smith",
-            "email": "dan.smith@gmail.com",
-            "dietpreferences": ["vegan"],
-            "favcategories": [],
-            "creationdate": datetime.utcnow()
-        },
-        {
-            "name": "Terry Crews",
-            "email": "terry.crews@gmail.com",
-            "dietpreferences": ["high-protein"],
-            "favcategories": [],
-            "creationdate": datetime.utcnow()
-        },
-        {
-            "name": "Sarah Connor",
-            "email": "sarah.connor@terminator.com",
-            "dietpreferences": ["paleo"],
-            "favcategories": [],
-            "creationdate": datetime.utcnow()
-        },
-        {
-            "name": "James Bond",
-            "email": "james.bond@mi6.uk",
-            "dietpreferences": ["none"],
-            "favcategories": [],
-            "creationdate": datetime.utcnow()
-        },
-        {
-            "name": "Jane Kilcher",
-            "email": "jane.kilcher@gmail.com",
-            "dietpreferences": ["paleo"],
-            "favcategories": [],
-            "creationdate": datetime.utcnow()
-        },
-        {
-            "name": "Kurt Hummel",
-            "email": "kurt.hummel@gmail.com",
-            "dietpreferences": ["vegetarian"],
-            "favcategories": [],
-            "creationdate": datetime.utcnow()
-        },
-        {
-            "name": "Rachel Green",
-            "email": "rachel.green@friends.com",
-            "dietpreferences": ["vegetarian"],
-            "favcategories": [],
-            "creationdate": datetime.utcnow()
-        },
-        {
-            "name": "Jay Mewes",
-            "email": "jay.mewes@viewaskew.com",
-            "dietpreferences": ["vegan"],
-            "favcategories": [],
-            "creationdate": datetime.utcnow()
-        },
-        {
-            "name": "Shaggy Rogers",
-            "email": "shaggy.rogers@monsterhunters.com",
-            "dietpreferences": ["vegetarian"],
-            "favcategories": [],
-            "creationdate": datetime.utcnow()
-        },
-        {
-            "name": "Fred Jones",
-            "email": "fred.jones@monsterhunters.com",
-            "dietpreferences": ["high-protein"],
-            "favcategories": [],
-            "creationdate": datetime.utcnow()
-        },
-        {
-            "name": "Velma Dinkley",
-            "email": "velma.dinkley@twinpeaks.com",
-            "dietpreferences": ["gluten-free"],
-            "favcategories": [],
-            "creationdate": datetime.utcnow()
-        },
-        {
-            "name": "Daphnie Blake",
-            "email": "daphnie.blake@monsterhunters.com",
-            "dietpreferences": ["vegetarian"],
-            "favcategories": [],
-            "creationdate": datetime.utcnow()
-        },
-        {
-            "name": "Chev Chelios",
-            "email": "unstoppable@crank.com",
-            "dietpreferences": ["high-protein"],
-            "favcategories": [],
-            "creationdate": datetime.utcnow()
-        },
-        {
-            "name": "John McClane",
-            "email": "john.mcclane@diehard.com",
-            "dietpreferences": ["none"],
-            "favcategories": [],
-            "creationdate": datetime.utcnow()
-        },
-        {
-            "name": "Black Dynamite",
-            "email": "black.dynamite@fbi.gov",
-            "dietpreferences": ["high-protein"],
-            "favcategories": [],
-            "creationdate": datetime.utcnow()
-        },
-        {
-            "name": "Duke Nukem",
-            "email": "duke.nukem@3drealms.com",
-            "dietpreferences": ["low-carb"],
-            "favcategories": [],
-            "creationdate": datetime.utcnow()
-        },
-        {
-            "name": "Richard B. Riddick",
-            "email": "richard.riddick@pitchblack.com",
-            "dietpreferences": ["none"],
-            "favcategories": [],
-            "creationdate": datetime.utcnow()
-        },
-        {
-            "name": "Henry Dorsett Case",
-            "email": "henry.dorsett.case@Neuromancer.com",
-            "dietpreferences": ["futuristic"],
-            "favcategories": [],
-            "creationdate": datetime.utcnow()
-        },
-        {
-            "name": "Neo Anderson",
-            "email": "neo.anderson@matrix.com",
-            "dietpreferences": ["red-pills-only"],
-            "favcategories": [],
-            "creationdate": datetime.utcnow()
-        },
-        {
-            "name": "Morpheus",
-            "email": "morpheus@matrix.com",
-            "dietpreferences": ["red-pills-only"],
-            "favcategories": [],
-            "creationdate": datetime.utcnow()
-        },
-        {
-            "name": "Masao Kakihara",
-            "email": "kakihara@yakuza.com",
-            "dietpreferences": ["none"],
-            "favcategories": [],
-            "creationdate": datetime.utcnow()
-        },
-        {
-            "name": "Ronnie James Dio",
-            "email": "holydiver@thelastinline.com",
-            "dietpreferences": ["none"],
-            "favcategories": [],
-            "creationdate": datetime.utcnow()
-        },
-        {
-            "name": "Bob Clarkson",
-            "email": "bob.clarkson@gmail.com",
-            "dietpreferences": ["none"],
-            "favcategories": [],
-            "creationdate": datetime.utcnow()
-        },
-        {
-            "name": "Terry Gilliam",
-            "email": "tgilliam@montypython.com",
-            "dietpreferences": ["vegan"],
-            "favcategories": [],
-            "creationdate": datetime.utcnow()
-        },
-        {
-            "name": "The Black Knight",
-            "email": "BlackKnight@montypython.com",
-            "dietpreferences": ["rabbit-only"],
-            "favcategories": [],
-            "creationdate": datetime.utcnow()
-        },
-        {
-            "name": "Hiro Protagonist",
-            "email": "hiro.protagonist@snowcrash.com",
-            "dietpreferences": ["none"],
-            "favcategories": [],
-            "creationdate": datetime.utcnow()
-        },
-        {
-            "name": "Kirby Reed",
-            "email": "kirby.reed@fbi.gov",
-            "dietpreferences": ["none"],
-            "favcategories": [],
-            "creationdate": datetime.utcnow()
-        },
-        {
-            "name": "Daria Morgendorffer",
-            "email": "daria.morgendorffer@sadsickworld.com",
-            "dietpreferences": ["vegetarian"],
-            "favcategories": [],
-            "creationdate": datetime.utcnow()
-        }
-        
-    ]
+        { "name": "Maria Santos",        "email": "maria@example.com",                    "dietary_preferences": ["vegetarian", "gluten-free"], "favorite_categories": [categories[0]], "created_at": datetime.utcnow() },
+        { "name": "Alice Johnson",        "email": "alice@gmail.com",                      "dietary_preferences": ["vegetarian"],                 "favorite_categories": [],              "created_at": datetime.utcnow() },
+        { "name": "Bob Smith",            "email": "bob@bobby.com",                        "dietary_preferences": ["high-protein"],               "favorite_categories": [],              "created_at": datetime.utcnow() },
+        { "name": "Laura Palmer",         "email": "laurapalmer@twinpeaks.com",            "dietary_preferences": ["gluten-free"],                "favorite_categories": [],              "created_at": datetime.utcnow() },
+        { "name": "Dale Cooper",          "email": "dalecooper@fbi.gov",                   "dietary_preferences": ["low-carb"],                   "favorite_categories": [],              "created_at": datetime.utcnow() },
+        { "name": "Roger Huntington",     "email": "borntobleed@gmail.com",                "dietary_preferences": ["high-protein"],               "favorite_categories": [],              "created_at": datetime.utcnow() },
+        { "name": "John Doe",             "email": "john.doe@missing.com",                 "dietary_preferences": ["vegan"],                      "favorite_categories": [],              "created_at": datetime.utcnow() },
+        { "name": "John Wick",            "email": "john.wick@continental.com",            "dietary_preferences": ["high-protein"],               "favorite_categories": [],              "created_at": datetime.utcnow() },
+        { "name": "Stu Macher",           "email": "stu.macher@scarymovies.com",           "dietary_preferences": ["low-carb"],                   "favorite_categories": [],              "created_at": datetime.utcnow() },
+        { "name": "Billy Loomis",         "email": "billy.loomis@scarymovies.com",         "dietary_preferences": ["low-carb"],                   "favorite_categories": [],              "created_at": datetime.utcnow() },
+        { "name": "Silent Bob",           "email": "silentbob@viewaskew.com",              "dietary_preferences": ["vegan"],                      "favorite_categories": [],              "created_at": datetime.utcnow() },
+        { "name": "Fox Mulder",           "email": "fox.mulder@fbi.gov",                   "dietary_preferences": ["mediterranean"],              "favorite_categories": [],              "created_at": datetime.utcnow() },
+        { "name": "Ash Williams",         "email": "ash.williams@necronomicon.com",        "dietary_preferences": ["paleo"],                      "favorite_categories": [],              "created_at": datetime.utcnow() },
+        { "name": "Vincent Vega",         "email": "vincent.vega@pulpfiction.com",         "dietary_preferences": ["none"],                       "favorite_categories": [],              "created_at": datetime.utcnow() },
+        { "name": "Jules Winnfield",      "email": "jules.winnfield@pulpfiction.com",      "dietary_preferences": ["none"],                       "favorite_categories": [],              "created_at": datetime.utcnow() },
+        { "name": "Charlie Dompler",      "email": "charlie.dompler@SmilingFriends.net",   "dietary_preferences": ["vegan"],                      "favorite_categories": [],              "created_at": datetime.utcnow() },
+        { "name": "Pim Pimling",          "email": "pim.pimling@smilingfriends.net",       "dietary_preferences": ["vegetarian"],                 "favorite_categories": [],              "created_at": datetime.utcnow() },
+        { "name": "Allan Red",            "email": "allan.red@smilingfriends.net",         "dietary_preferences": ["high-protein"],               "favorite_categories": [],              "created_at": datetime.utcnow() },
+        { "name": "Walter White",         "email": "walter.white@breakingbad.com",         "dietary_preferences": ["high-protein"],               "favorite_categories": [],              "created_at": datetime.utcnow() },
+        { "name": "Jesse Pinkman",        "email": "jesse.pinkman@breakingbad.com",        "dietary_preferences": ["low-carb"],                   "favorite_categories": [],              "created_at": datetime.utcnow() },
+        { "name": "Dexter Morgan",        "email": "dexter.morgan@darkmatter.com",         "dietary_preferences": ["paleo"],                      "favorite_categories": [],              "created_at": datetime.utcnow() },
+        { "name": "Sneakers O'Toole",     "email": "sneakers.otoole@gmail.com",            "dietary_preferences": ["none"],                       "favorite_categories": [],              "created_at": datetime.utcnow() },
+        { "name": "Dio Brando",           "email": "dio.brando@gmail.com",                 "dietary_preferences": ["none"],                       "favorite_categories": [],              "created_at": datetime.utcnow() },
+        { "name": "Dan Smith",            "email": "dan.smith@gmail.com",                  "dietary_preferences": ["vegan"],                      "favorite_categories": [],              "created_at": datetime.utcnow() },
+        { "name": "Terry Crews",          "email": "terry.crews@gmail.com",                "dietary_preferences": ["high-protein"],               "favorite_categories": [],              "created_at": datetime.utcnow() },
+        { "name": "Sarah Connor",         "email": "sarah.connor@terminator.com",          "dietary_preferences": ["paleo"],                      "favorite_categories": [],              "created_at": datetime.utcnow() },
+        { "name": "James Bond",           "email": "james.bond@mi6.uk",                    "dietary_preferences": ["none"],                       "favorite_categories": [],              "created_at": datetime.utcnow() },
+        { "name": "Jane Kilcher",         "email": "jane.kilcher@gmail.com",               "dietary_preferences": ["paleo"],                      "favorite_categories": [],              "created_at": datetime.utcnow() },
+        { "name": "Kurt Hummel",          "email": "kurt.hummel@gmail.com",                "dietary_preferences": ["vegetarian"],                 "favorite_categories": [],              "created_at": datetime.utcnow() },
+        { "name": "Rachel Green",         "email": "rachel.green@friends.com",             "dietary_preferences": ["vegetarian"],                 "favorite_categories": [],              "created_at": datetime.utcnow() },
+        { "name": "Jay Mewes",            "email": "jay.mewes@viewaskew.com",              "dietary_preferences": ["vegan"],                      "favorite_categories": [],              "created_at": datetime.utcnow() },
+        { "name": "Shaggy Rogers",        "email": "shaggy.rogers@monsterhunters.com",     "dietary_preferences": ["vegetarian"],                 "favorite_categories": [],              "created_at": datetime.utcnow() },
+        { "name": "Fred Jones",           "email": "fred.jones@monsterhunters.com",        "dietary_preferences": ["high-protein"],               "favorite_categories": [],              "created_at": datetime.utcnow() },
+        { "name": "Velma Dinkley",        "email": "velma.dinkley@twinpeaks.com",          "dietary_preferences": ["gluten-free"],                "favorite_categories": [],              "created_at": datetime.utcnow() },
+        { "name": "Daphnie Blake",        "email": "daphnie.blake@monsterhunters.com",     "dietary_preferences": ["vegetarian"],                 "favorite_categories": [],              "created_at": datetime.utcnow() },
+        { "name": "Chev Chelios",         "email": "unstoppable@crank.com",                "dietary_preferences": ["high-protein"],               "favorite_categories": [],              "created_at": datetime.utcnow() },
+        { "name": "John McClane",         "email": "john.mcclane@diehard.com",             "dietary_preferences": ["none"],                       "favorite_categories": [],              "created_at": datetime.utcnow() },
+        { "name": "Black Dynamite",       "email": "black.dynamite@fbi.gov",               "dietary_preferences": ["high-protein"],               "favorite_categories": [],              "created_at": datetime.utcnow() },
+        { "name": "Duke Nukem",           "email": "duke.nukem@3drealms.com",              "dietary_preferences": ["low-carb"],                   "favorite_categories": [],              "created_at": datetime.utcnow() },
+        { "name": "Richard B. Riddick",   "email": "richard.riddick@pitchblack.com",       "dietary_preferences": ["none"],                       "favorite_categories": [],              "created_at": datetime.utcnow() },
+        { "name": "Henry Dorsett Case",   "email": "henry.dorsett.case@Neuromancer.com",   "dietary_preferences": ["futuristic"],                 "favorite_categories": [],              "created_at": datetime.utcnow() },
+        { "name": "Neo Anderson",         "email": "neo.anderson@matrix.com",              "dietary_preferences": ["none"],                       "favorite_categories": [],              "created_at": datetime.utcnow() },
+        { "name": "Morpheus",             "email": "morpheus@matrix.com",                  "dietary_preferences": ["none"],                       "favorite_categories": [],              "created_at": datetime.utcnow() },
+        { "name": "Masao Kakihara",       "email": "kakihara@yakuza.com",                  "dietary_preferences": ["none"],                       "favorite_categories": [],              "created_at": datetime.utcnow() },
+        { "name": "Ronnie James Dio",     "email": "holydiver@thelastinline.com",           "dietary_preferences": ["none"],                       "favorite_categories": [],              "created_at": datetime.utcnow() },
+        { "name": "Bob Clarkson",         "email": "bob.clarkson@gmail.com",               "dietary_preferences": ["none"],                       "favorite_categories": [],              "created_at": datetime.utcnow() },
+        { "name": "Terry Gilliam",        "email": "tgilliam@montypython.com",             "dietary_preferences": ["vegan"],                      "favorite_categories": [],              "created_at": datetime.utcnow() },
+        { "name": "The Black Knight",     "email": "BlackKnight@montypython.com",          "dietary_preferences": ["none"],                       "favorite_categories": [],              "created_at": datetime.utcnow() },
+        { "name": "Hiro Protagonist",     "email": "hiro.protagonist@snowcrash.com",       "dietary_preferences": ["none"],                       "favorite_categories": [],              "created_at": datetime.utcnow() },
+        { "name": "Kirby Reed",           "email": "kirby.reed@fbi.gov",                   "dietary_preferences": ["none"],                       "favorite_categories": [],              "created_at": datetime.utcnow() },
+        { "name": "Daria Morgendorffer",  "email": "daria.morgendorffer@sadsickworld.com", "dietary_preferences": ["vegetarian"],                 "favorite_categories": [],              "created_at": datetime.utcnow() },
     ]).inserted_ids
+    print(f"Seeded {len(users)} users.")
 
     # ── RECIPES ──
     recipes = db.recipes.insert_many([
         {
             "title": "Chicken Tikka Masala",
             "description": "A rich, creamy tomato-based curry.",
-            "category_id": categories[0],
+            "category_id": categories[2],
             "author_user_id": users[0],
             "ingredients": [
                 { "name": "chicken breast", "amount": 500, "unit": "g" },
@@ -400,489 +98,424 @@ def seed():
             ],
             "tags": ["curry", "Indian", "comfort food"],
             "dietary_flags": ["gluten-free", "high-protein"],
-            "prep_time": 20,
-            "cook_time": 35,
-            "servings": 4,
+            "prep_time": 20, "cook_time": 35, "servings": 4,
         },
         {
             "title": "Veggie Omelette",
-            "description": "Healthy vegetarian omelette",
-            "categoryid": categoryids[0],
-            "authoruserid": userids[0],
+            "description": "Healthy vegetarian omelette.",
+            "category_id": categories[0],
+            "author_user_id": users[1],
             "ingredients": [
-                {"name": "Eggs", "quantity": 2},
-                {"name": "Spinach", "quantity": "1 cup"}
+                { "name": "eggs",    "amount": 2,   "unit": "whole" },
+                { "name": "spinach", "amount": 1,   "unit": "cup" },
             ],
-            "tags": ["vegetarian"],
+            "tags": ["vegetarian", "breakfast"],
             "dietary_flags": ["vegetarian"],
-            "preptime": 5,
-            "cooktime": 10,
-            "servings": 1
+            "prep_time": 5, "cook_time": 10, "servings": 1,
         },
         {
             "title": "Grilled Chicken",
-            "description": "High protein dinner",
-            "categoryid": categoryids[1],
-            "authoruserid": userids[1],
+            "description": "High protein dinner.",
+            "category_id": categories[2],
+            "author_user_id": users[2],
             "ingredients": [
-                {"name": "Chicken breast", "quantity": "200g"}
+                { "name": "chicken breast", "amount": 200, "unit": "g" },
             ],
-            "tags": ["protein"],
+            "tags": ["protein", "simple"],
             "dietary_flags": ["high-protein"],
-            "preptime": 10,
-            "cooktime": 20,
-            "servings": 2
+            "prep_time": 10, "cook_time": 20, "servings": 2,
         },
         {
             "title": "Gluten-Free Pasta",
-            "description": "Pasta for gluten-sensitive",    
-            "categoryid": categoryids[1],
-            "authoruserid": userids[2],
+            "description": "Pasta for gluten-sensitive diets.",
+            "category_id": categories[1],
+            "author_user_id": users[3],
             "ingredients": [
-                {"name": "Gluten-free pasta", "quantity": "100g"},
-                {"name": "Tomato sauce", "quantity": "1 cup"}
+                { "name": "gluten-free pasta", "amount": 100, "unit": "g" },
+                { "name": "tomato sauce",       "amount": 1,   "unit": "cup" },
             ],
-            "tags": ["gluten-free"],
+            "tags": ["gluten-free", "pasta"],
             "dietary_flags": ["gluten-free"],
-            "preptime": 15,
-            "cooktime": 15,
-            "servings": 2
+            "prep_time": 15, "cook_time": 15, "servings": 2,
         },
-        {   
+        {
             "title": "Keto Salad",
-            "description": "Low-carb salad for keto diet",
-            "categoryid": categoryids[1],
-            "authoruserid": userids[3],
+            "description": "Low-carb salad for keto diet.",
+            "category_id": categories[1],
+            "author_user_id": users[4],
             "ingredients": [
-                {"name": "Lettuce", "quantity": "2 cups"},
-                {"name": "Avocado", "quantity": 1},
-                {"name": "Bacon", "quantity": "50g"}
-            ],          
-            "tags": ["keto", "salad"],
+                { "name": "lettuce",  "amount": 2,  "unit": "cups" },
+                { "name": "avocado",  "amount": 1,  "unit": "whole" },
+                { "name": "bacon",    "amount": 50, "unit": "g" },
+            ],
+            "tags": ["keto", "salad", "low-carb"],
             "dietary_flags": ["low-carb"],
-            "preptime": 10,
-            "cooktime": 0,
-            "servings": 1
+            "prep_time": 10, "cook_time": 0, "servings": 1,
         },
         {
             "title": "Vegan Stir-Fry",
-            "description": "Quick and easy vegan stir-fry",
-            "categoryid": categoryids[1],
-            "authoruserid": userids[4],
+            "description": "Quick and easy vegan stir-fry.",
+            "category_id": categories[2],
+            "author_user_id": users[5],
             "ingredients": [
-                {"name": "Tofu", "quantity": "200g"},
-                {"name": "Mixed vegetables", "quantity": "2 cups"},
-                {"name": "Soy sauce", "quantity": "2 tbsp"}
+                { "name": "tofu",              "amount": 200, "unit": "g" },
+                { "name": "mixed vegetables",  "amount": 2,   "unit": "cups" },
+                { "name": "soy sauce",         "amount": 2,   "unit": "tbsp" },
             ],
             "tags": ["vegan", "stir-fry"],
             "dietary_flags": ["vegan"],
-            "preptime": 15,
-            "cooktime": 10,
-            "servings": 2
+            "prep_time": 15, "cook_time": 10, "servings": 2,
         },
         {
             "title": "Paleo Beef Stew",
-            "description": "Hearty beef stew for paleo diet",
-            "categoryid": categoryids[1],
-            "authoruserid": userids[5],
+            "description": "Hearty beef stew for paleo diet.",
+            "category_id": categories[2],
+            "author_user_id": users[6],
             "ingredients": [
-                {"name": "Beef chunks", "quantity": "300g"},
-                {"name": "Carrots", "quantity": "2"},
-                {"name": "Potatoes", "quantity": "2"},
-                {"name": "Beef broth", "quantity": "2 cups"}
+                { "name": "beef chunks", "amount": 300, "unit": "g" },
+                { "name": "carrots",     "amount": 2,   "unit": "whole" },
+                { "name": "potatoes",    "amount": 2,   "unit": "whole" },
+                { "name": "beef broth",  "amount": 2,   "unit": "cups" },
             ],
             "tags": ["paleo", "stew"],
             "dietary_flags": ["paleo"],
-            "preptime": 20,
-            "cooktime": 120,
-            "servings": 4
+            "prep_time": 20, "cook_time": 120, "servings": 4,
         },
         {
             "title": "Mediterranean Quinoa Salad",
-            "description": "Light and healthy quinoa salad",    
-            "categoryid": categoryids[1],
-            "authoruserid": userids[6], 
+            "description": "Light and healthy quinoa salad.",
+            "category_id": categories[1],
+            "author_user_id": users[7],
             "ingredients": [
-                {"name": "Quinoa", "quantity": "1 cup"},
-                {"name": "Cucumber", "quantity": 1},
-                {"name": "Tomatoes", "quantity": "2"},
-                {"name": "Feta cheese", "quantity": "50g"},
-                {"name": "Olive oil", "quantity": "2 tbsp"}
-            ],  
+                { "name": "quinoa",      "amount": 1,  "unit": "cup" },
+                { "name": "cucumber",    "amount": 1,  "unit": "whole" },
+                { "name": "tomatoes",    "amount": 2,  "unit": "whole" },
+                { "name": "feta cheese", "amount": 50, "unit": "g" },
+                { "name": "olive oil",   "amount": 2,  "unit": "tbsp" },
+            ],
             "tags": ["mediterranean", "salad"],
             "dietary_flags": ["mediterranean"],
-            "preptime": 15,
-            "cooktime": 15,
-            "servings": 2
+            "prep_time": 15, "cook_time": 15, "servings": 2,
         },
         {
             "title": "Red Smoothie",
             "description": "A simple red berry smoothie.",
-            "categoryid": categoryids[0],
-            "authoruserid": userids[7],
+            "category_id": categories[0],
+            "author_user_id": users[8],
             "ingredients": [
-                {"name": "Red berries", "quantity": "1 cup"},
-                {"name": "Almond milk", "quantity": "1 cup"},
-                {"name": "Chia seeds", "quantity": "2 tbsp"}
+                { "name": "red berries",  "amount": 1, "unit": "cup" },
+                { "name": "almond milk",  "amount": 1, "unit": "cup" },
+                { "name": "chia seeds",   "amount": 2, "unit": "tbsp" },
             ],
-            "tags": ["red-pill", "smoothie"],
-            "dietary_flags": ["red-pills-only"],
-            "preptime": 5,
-            "cooktime": 0,
-            "servings": 1
+            "tags": ["smoothie", "breakfast"],
+            "dietary_flags": ["vegan"],
+            "prep_time": 5, "cook_time": 0, "servings": 1,
         },
-            {
-                "title": "Rabbit Stew",
-                "description": "Stew made with rabbit meat.",
-                "categoryid": categoryids[1],
-                "authoruserid": userids[8],
-                "ingredients": [
-                    {"name": "Rabbit meat", "quantity": "300g"},
-                    {"name": "Carrots", "quantity": "2"},
-                    {"name": "Potatoes", "quantity": "2"},
-                    {"name": "Onions", "quantity": 1},
-                    {"name": "Garlic", "quantity": 2},
-                    {"name": "Rabbit broth", "quantity": "2 cups"}
-                ],
-                "tags": ["rabbit-only", "stew"],
-                "dietary_flags": ["rabbit-only"],
-                "preptime": 20,
-                "cooktime": 120,
-                "servings": 4   
-            },
-            {
-                "title": "Asian Salad",
-                "description": "A futuristic salad inspired by Asian flavors.",
-                "categoryid": categoryids[1],
-                "authoruserid": userids[9],
-                "ingredients": [
-                    {"name": "Lettuce", "quantity": "2 cups"},
-                    {"name": "Avocado", "quantity": 1},
-                    {"name": "Quinoa", "quantity": "1 cup"},
-                    {"name": "Edamame", "quantity": "1 cup"},
-                    {"name": "Soy sauce", "quantity": "2 tbsp"}
-                ],  
-                "tags": ["futuristic", "salad"],
-                "dietary_flags": ["futuristic"],
-                "preptime": 15,
-                "cooktime": 10,     
-                "servings": 2
-            },
-            {
-                "title": "Kale Smoothie",
-                "description": "A simple kale smoothie.",
-                "categoryid": categoryids[0],
-                "authoruserid": userids[10],
-                "ingredients": [
-                    {"name": "Kale", "quantity": "2 cups"},
-                    {"name": "Banana", "quantity": 1},
-                    {"name": "Almond milk", "quantity": "1 cup"}
-                ],
-                "tags": ["kale", "smoothie"],
-                "dietary_flags": ["kale-only"],
-                "preptime": 5,
-                "cooktime": 0,
-                "servings": 1
-            },
-            {
-                "title": "Fish and Chips",
-                "description": "Classic British dish for those who follow Daria Morgendorffer's diet",
-                "categoryid": categoryids[1],
-                "authoruserid": userids[11],
-                "ingredients": [
-                    {"name": "Fish fillets", "quantity": "200g"},
-                    {"name": "Potatoes", "quantity": "2"},
-                    {"name": "Flour", "quantity": "1 cup"},
-                    {"name": "Beer", "quantity": "1 cup"},
-                    {"name": "Salt", "quantity": "to taste"},
-                    {"name": "Pepper", "quantity": "to taste"}
-                ],
-                "tags": ["fish-and-chips", "british"],
-                "dietary_flags": ["fish-and-chips"],
-                "preptime": 15,
-                "cooktime": 20,
-                "servings": 2
-            },
-            {
-                "title": "Vegan Chocolate Cake",
-                "description": "A delicious vegan chocolate cake for those who follow Jay Mewes' diet",
-                "categoryid": categoryids[1],
-                "authoruserid": userids[12],
-                "ingredients": [
-                    {"name": "Flour", "quantity": "1.5 cups"},
-                    {"name": "Cocoa powder", "quantity": "0.5 cup"},
-                    {"name": "Sugar", "quantity": "1 cup"},
-                    {"name": "Baking soda", "quantity": "1 tsp"},
-                    {"name": "Salt", "quantity": "0.5 tsp"},
-                    {"name": "Water", "quantity": "1 cup"},
-                    {"name": "Vegetable oil", "quantity": "0.5 cup"},
-                    {"name": "Vanilla extract", "quantity": "1 tsp"}
-                ],
-                "tags": ["vegan", "dessert"],
-                "dietary_flags": ["vegan"],
-                "preptime": 20,
-                "cooktime": 30,
-                "servings": 8
-            },
-            {
-                "title": "Pasta Primavera",
-                "description": "A light pasta dish for those who follow Shaggy Rogers' diet",
-                "categoryid": categoryids[1],
-                "authoruserid": userids[13],
-                "ingredients": [
-                    {"name": "Pasta", "quantity": "200g"},
-                    {"name": "Zucchini", "quantity": 1},
-                    {"name": "Bell pepper", "quantity": 1},
-                    {"name": "Cherry tomatoes", "quantity": "1 cup"},
-                    {"name": "Olive oil", "quantity": "2 tbsp"},
-                    {"name": "Garlic", "quantity": 2},
-                    {"name": "Parmesan cheese", "quantity": "50g"}
-                ],
-                "tags": ["pasta", "vegetarian"],
-                "dietary_flags": ["vegetarian"],
-                "preptime": 15,
-                "cooktime": 20,
-                "servings": 2
-            },
-            {
-                "title": "Steak and Eggs",
-                "description": "A hearty meal for those who follow Chev Chelios' diet",
-                "categoryid": categoryids[1],
-                "authoruserid": userids[14],
-                "ingredients": [
-                    {"name": "Steak", "quantity": "300g"},
-                    {"name": "Eggs", "quantity": 2},
-                    {"name": "Salt", "quantity": "to taste"},
-                    {"name": "Pepper", "quantity": "to taste"}
-                ],
-                "tags": ["steak", "eggs", "high-protein"],
-                "dietary_flags": ["high-protein"],
-                "preptime": 10,
-                "cooktime": 15,
-                "servings": 1
-            },
-            {
-                "title": "Birria Tacos",
-                "description": "Delicious birria tacos for those who follow John McClane's diet",
-                "categoryid": categoryids[1],
-                "authoruserid": userids[15],
-                "ingredients": [
-                    {"name": "Beef", "quantity": "300g"},
-                    {"name": "Taco shells", "quantity": "4"},
-                    {"name": "Onions", "quantity": 1},
-                    {"name": "Garlic", "quantity": 2},
-                    {"name": "Chili powder", "quantity": "1 tbsp"},
-                    {"name": "Cumin", "quantity": "1 tsp"},
-                    {"name": "Oregano", "quantity": "1 tsp"},
-                    {"name": "Beef broth", "quantity": "2 cups"}
-                ],
-                "tags": ["birria", "tacos"],
-                "dietary_flags": ["none"],
-                "preptime": 20,
-                "cooktime": 120,
-                "servings": 4
-            },
-            {
-                "title": "Chicken Teriyaki",
-                "description": "A savory dish for those who follow Goku's diet",
-                "categoryid": categoryids[1],
-                "authoruserid": userids[16],
-                "ingredients": [
-                    {"name": "Chicken", "quantity": "300g"},
-                    {"name": "Teriyaki sauce", "quantity": "2 tbsp"},
-                    {"name": "Ginger", "quantity": "1 tsp"},
-                    {"name": "Garlic", "quantity": 2},
-                    {"name": "Soy sauce", "quantity": "1 tbsp"}
-                ],
-                "tags": ["chicken", "teriyaki"],
-                "dietary_flags": ["none"],
-                "preptime": 15,
-                "cooktime": 20,
-                "servings": 2
-            },
-            {
-                "title": "Caesar Salad",
-                "description": "A refreshing salad for those who follow Vegeta's diet",
-                "categoryid": categoryids[0],
-                "authoruserid": userids[17],
-                "ingredients": [
-                    {"name": "Romaine lettuce", "quantity": "1 head"},
-                    {"name": "Croutons", "quantity": "1 cup"},
-                    {"name": "Parmesan cheese", "quantity": "50g"},
-                    {"name": "Caesar dressing", "quantity": "2 tbsp"}
-                ],
-                "tags": ["salad", "caesar"],
-                "dietary_flags": ["vegetarian"],
-                "preptime": 10,
-                "cooktime": 0,
-                "servings": 2
-            }
-            {
-                "title": "Miso Soup",
-                "description": "A comforting soup for those who follow Bulma's diet",
-                "categoryid": categoryids[0],
-                "authoruserid": userids[18],
-                "ingredients": [
-                    {"name": "Miso paste", "quantity": "2 tbsp"},
-                    {"name": "Tofu", "quantity": "100g"},
-                    {"name": "Green onions", "quantity": 2},
-                    {"name": "Dashi broth", "quantity": "4 cups"}
-                ],
-                "tags": ["soup", "miso"],
-                "dietary_flags": ["vegetarian"],
-                "preptime": 10,
-                "cooktime": 15,
-                "servings": 4
-            }
-            {
-                "title": "Spaghetti Carbonara",
-                "description": "A classic Italian pasta dish for those who follow Piccolo's diet",
-                "categoryid": categoryids[1],
-                "authoruserid": userids[19],
-                "ingredients": [
-                    {"name": "Spaghetti", "quantity": "200g"},
-                    {"name": "Pancetta", "quantity": "100g"},
-                    {"name": "Eggs", "quantity": 2},
-                    {"name": "Parmesan cheese", "quantity": "50g"},
-                    {"name": "Black pepper", "quantity": "to taste"}
-                ],
-                "tags": ["pasta", "carbonara"],
-                "dietary_flags": ["none"],
-                "preptime": 15,
-                "cooktime": 20,
-                "servings": 2
-
-            },
-            { 
-                "title": "Gabagool Sandwich",
-                "description": "A delicious sandwich inspired by Italy.",
-                "categoryid": categoryids[1],
-                "authoruserid": userids[20],
-                "ingredients": [
-                    {"name": "Gabagool", "quantity": "100g"},
-                    {"name": "Italian bread", "quantity": "1 loaf"},
-                    {"name": "Provolone cheese", "quantity": "50g"},
-                    {"name": "Lettuce", "quantity": "1 cup"},
-                    {"name": "Tomato", "quantity": 1},
-                    {"name": "Italian dressing", "quantity": "2 tbsp"}
-                ],
-                "tags": ["sandwich", "italian"],
-                "dietary_flags": ["none"],
-                "preptime": 10,
-                "cooktime": 0,
-                "servings": 2
-            },
-            {
-                "title": "Cordon Bleu",
-                "description": "A classic French dish.",
-                "categoryid": categoryids[2],
-                "authoruserid": userids[21],
-                "ingredients": [
-                    {"name": "Chicken breast", "quantity": "2 pieces"},
-                    {"name": "Bacon", "quantity": "4 slices"},
-                    {"name": "Swiss cheese", "quantity": "4 slices"},
-                    {"name": "Breadcrumb", "quantity": "1 cup"}
-                ],
-                "tags": ["chicken", "cordon-bleu"],
-                "dietary_flags": ["none"],
-                "preptime": 15,
-                "cooktime": 25,
-                "servings": 2
-            }
-            {
-                "title": "Four Cheese Mac and Cheese",
-                "description": "A cheesy comfort food.",
-                "categoryid": categoryids[3],
-                "authoruserid": userids[22],
-                "ingredients": [
-                    {"name": "Macaroni", "quantity": "200g"},
-                    {"name": "Cheddar cheese", "quantity": "100g"},
-                    {"name": "Mozzarella cheese", "quantity": "100g"},
-                    {"name": "Parmesan cheese", "quantity": "50g"},
-                    {"name": "Milk", "quantity": "1 cup"}
-                ],
-                "tags": ["pasta", "cheese"],
-                "dietary_flags": ["none"],
-                "preptime": 10,
-                "cooktime": 20,
-                "servings": 4
-            },
-            {
-                "title": "Buffalo Wings",
-                "description": "Spicy chicken wings for game day.",
-                "categoryid": categoryids[4],
-                "authoruserid": userids[23],
-                "ingredients": [
-                    {"name": "Chicken wings", "quantity": "500g"},
-                    {"name": "Buffalo sauce", "quantity": "1 cup"},
-                    {"name": "Butter", "quantity": "2 tbsp"},
-                    {"name": "Garlic powder", "quantity": "1 tsp"},
-                    {"name": "Salt", "quantity": "to taste"},
-                    {"name": "Pepper", "quantity": "to taste"}
-                ],
-                "tags": ["chicken", "buffalo-wings"],
-                "dietary_flags": ["none"],
-                "preptime": 15,
-                "cooktime": 25,
-                "servings": 4
-            },
-            {
-                "title": "Jalapeno Poppers",
-                "description": "Spicy stuffed peppers.",
-                "categoryid": categoryids[5],
-                "authoruserid": userids[24],
-                "ingredients": [
-                    {"name": "Jalapeno peppers", "quantity": "10 pieces"},
-                    {"name": "Cream cheese", "quantity": "100g"},
-                    {"name": "Garlic", "quantity": "2 cloves"},
-                    {"name": "Panko breadcrumbs", "quantity": "1 cup"},
-                    {"name": "Parmesan cheese", "quantity": "50g"}
-                ],
-                "tags": ["appetizer", "spicy"],
-                "dietary_flags": ["none"],
-                "preptime": 20,
-                "cooktime": 15,
-                "servings": 4
-            }
-            {
-                "title": "Chocolate Chip Cookies",
-                "description": "Classic cookies for dessert.",
-                "categoryid": categoryids[6],
-                "authoruserid": userids[25],
-                "ingredients": [
-                    {"name": "Flour", "quantity": "2 cups"},
-                    {"name": "Sugar", "quantity": "1 cup"},
-                    {"name": "Butter", "quantity": "1 cup"},
-                    {"name": "Eggs", "quantity": 2},
-                    {"name": "Chocolate chips", "quantity": "1 cup"},
-                    {"name": "Vanilla extract", "quantity": "1 tsp"},
-                    {"name": "Baking soda", "quantity": "1 tsp"},
-                    {"name": "Salt", "quantity": "0.5 tsp"}
-                ],
-                "tags": ["dessert", "cookies"],
-                "dietary_flags": ["none"],
-                "preptime": 15,
-                "cooktime": 10,
-                "servings": 24
-            }
+        {
+            "title": "Rabbit Stew",
+            "description": "Stew made with rabbit meat.",
+            "category_id": categories[2],
+            "author_user_id": users[9],
+            "ingredients": [
+                { "name": "rabbit meat",  "amount": 300, "unit": "g" },
+                { "name": "carrots",      "amount": 2,   "unit": "whole" },
+                { "name": "potatoes",     "amount": 2,   "unit": "whole" },
+                { "name": "onions",       "amount": 1,   "unit": "whole" },
+                { "name": "garlic",       "amount": 2,   "unit": "cloves" },
+                { "name": "rabbit broth", "amount": 2,   "unit": "cups" },
+            ],
+            "tags": ["stew", "rabbit"],
+            "dietary_flags": ["paleo"],
+            "prep_time": 20, "cook_time": 120, "servings": 4,
+        },
+        {
+            "title": "Asian Salad",
+            "description": "A fresh salad inspired by Asian flavors.",
+            "category_id": categories[1],
+            "author_user_id": users[10],
+            "ingredients": [
+                { "name": "lettuce",   "amount": 2, "unit": "cups" },
+                { "name": "avocado",   "amount": 1, "unit": "whole" },
+                { "name": "quinoa",    "amount": 1, "unit": "cup" },
+                { "name": "edamame",   "amount": 1, "unit": "cup" },
+                { "name": "soy sauce", "amount": 2, "unit": "tbsp" },
+            ],
+            "tags": ["asian", "salad"],
+            "dietary_flags": ["vegan"],
+            "prep_time": 15, "cook_time": 10, "servings": 2,
+        },
+        {
+            "title": "Kale Smoothie",
+            "description": "A simple kale smoothie.",
+            "category_id": categories[0],
+            "author_user_id": users[11],
+            "ingredients": [
+                { "name": "kale",        "amount": 2, "unit": "cups" },
+                { "name": "banana",      "amount": 1, "unit": "whole" },
+                { "name": "almond milk", "amount": 1, "unit": "cup" },
+            ],
+            "tags": ["smoothie", "healthy"],
+            "dietary_flags": ["vegan"],
+            "prep_time": 5, "cook_time": 0, "servings": 1,
+        },
+        {
+            "title": "Fish and Chips",
+            "description": "Classic British dish.",
+            "category_id": categories[2],
+            "author_user_id": users[12],
+            "ingredients": [
+                { "name": "fish fillets", "amount": 200, "unit": "g" },
+                { "name": "potatoes",     "amount": 2,   "unit": "whole" },
+                { "name": "flour",        "amount": 1,   "unit": "cup" },
+                { "name": "beer",         "amount": 1,   "unit": "cup" },
+            ],
+            "tags": ["fish", "british"],
+            "dietary_flags": ["none"],
+            "prep_time": 15, "cook_time": 20, "servings": 2,
+        },
+        {
+            "title": "Vegan Chocolate Cake",
+            "description": "A delicious vegan chocolate cake.",
+            "category_id": categories[3],
+            "author_user_id": users[13],
+            "ingredients": [
+                { "name": "flour",            "amount": 1.5, "unit": "cups" },
+                { "name": "cocoa powder",     "amount": 0.5, "unit": "cup" },
+                { "name": "sugar",            "amount": 1,   "unit": "cup" },
+                { "name": "baking soda",      "amount": 1,   "unit": "tsp" },
+                { "name": "water",            "amount": 1,   "unit": "cup" },
+                { "name": "vegetable oil",    "amount": 0.5, "unit": "cup" },
+                { "name": "vanilla extract",  "amount": 1,   "unit": "tsp" },
+            ],
+            "tags": ["vegan", "dessert", "chocolate"],
+            "dietary_flags": ["vegan"],
+            "prep_time": 20, "cook_time": 30, "servings": 8,
+        },
+        {
+            "title": "Pasta Primavera",
+            "description": "A light pasta dish with fresh vegetables.",
+            "category_id": categories[2],
+            "author_user_id": users[14],
+            "ingredients": [
+                { "name": "pasta",           "amount": 200, "unit": "g" },
+                { "name": "zucchini",        "amount": 1,   "unit": "whole" },
+                { "name": "bell pepper",     "amount": 1,   "unit": "whole" },
+                { "name": "cherry tomatoes", "amount": 1,   "unit": "cup" },
+                { "name": "olive oil",       "amount": 2,   "unit": "tbsp" },
+                { "name": "garlic",          "amount": 2,   "unit": "cloves" },
+                { "name": "parmesan cheese", "amount": 50,  "unit": "g" },
+            ],
+            "tags": ["pasta", "vegetarian"],
+            "dietary_flags": ["vegetarian"],
+            "prep_time": 15, "cook_time": 20, "servings": 2,
+        },
+        {
+            "title": "Steak and Eggs",
+            "description": "A hearty high-protein meal.",
+            "category_id": categories[0],
+            "author_user_id": users[15],
+            "ingredients": [
+                { "name": "steak", "amount": 300, "unit": "g" },
+                { "name": "eggs",  "amount": 2,   "unit": "whole" },
+            ],
+            "tags": ["steak", "eggs", "high-protein"],
+            "dietary_flags": ["high-protein"],
+            "prep_time": 10, "cook_time": 15, "servings": 1,
+        },
+        {
+            "title": "Birria Tacos",
+            "description": "Delicious slow-cooked birria tacos.",
+            "category_id": categories[2],
+            "author_user_id": users[16],
+            "ingredients": [
+                { "name": "beef",         "amount": 300, "unit": "g" },
+                { "name": "taco shells",  "amount": 4,   "unit": "whole" },
+                { "name": "onions",       "amount": 1,   "unit": "whole" },
+                { "name": "garlic",       "amount": 2,   "unit": "cloves" },
+                { "name": "chili powder", "amount": 1,   "unit": "tbsp" },
+                { "name": "beef broth",   "amount": 2,   "unit": "cups" },
+            ],
+            "tags": ["birria", "tacos", "mexican"],
+            "dietary_flags": ["none"],
+            "prep_time": 20, "cook_time": 120, "servings": 4,
+        },
+        {
+            "title": "Chicken Teriyaki",
+            "description": "A savory Japanese-inspired chicken dish.",
+            "category_id": categories[2],
+            "author_user_id": users[17],
+            "ingredients": [
+                { "name": "chicken",        "amount": 300, "unit": "g" },
+                { "name": "teriyaki sauce", "amount": 2,   "unit": "tbsp" },
+                { "name": "ginger",         "amount": 1,   "unit": "tsp" },
+                { "name": "garlic",         "amount": 2,   "unit": "cloves" },
+                { "name": "soy sauce",      "amount": 1,   "unit": "tbsp" },
+            ],
+            "tags": ["chicken", "teriyaki", "japanese"],
+            "dietary_flags": ["none"],
+            "prep_time": 15, "cook_time": 20, "servings": 2,
+        },
+        {
+            "title": "Caesar Salad",
+            "description": "A refreshing classic Caesar salad.",
+            "category_id": categories[0],
+            "author_user_id": users[18],
+            "ingredients": [
+                { "name": "romaine lettuce",  "amount": 1,  "unit": "head" },
+                { "name": "croutons",         "amount": 1,  "unit": "cup" },
+                { "name": "parmesan cheese",  "amount": 50, "unit": "g" },
+                { "name": "Caesar dressing",  "amount": 2,  "unit": "tbsp" },
+            ],
+            "tags": ["salad", "caesar", "vegetarian"],
+            "dietary_flags": ["vegetarian"],
+            "prep_time": 10, "cook_time": 0, "servings": 2,
+        },
+        {
+            "title": "Miso Soup",
+            "description": "A comforting Japanese miso soup.",
+            "category_id": categories[0],
+            "author_user_id": users[19],
+            "ingredients": [
+                { "name": "miso paste",   "amount": 2, "unit": "tbsp" },
+                { "name": "tofu",         "amount": 100, "unit": "g" },
+                { "name": "green onions", "amount": 2, "unit": "whole" },
+                { "name": "dashi broth",  "amount": 4, "unit": "cups" },
+            ],
+            "tags": ["soup", "miso", "japanese"],
+            "dietary_flags": ["vegetarian"],
+            "prep_time": 10, "cook_time": 15, "servings": 4,
+        },
+        {
+            "title": "Spaghetti Carbonara",
+            "description": "A classic Italian pasta dish.",
+            "category_id": categories[2],
+            "author_user_id": users[20],
+            "ingredients": [
+                { "name": "spaghetti",       "amount": 200, "unit": "g" },
+                { "name": "pancetta",        "amount": 100, "unit": "g" },
+                { "name": "eggs",            "amount": 2,   "unit": "whole" },
+                { "name": "parmesan cheese", "amount": 50,  "unit": "g" },
+            ],
+            "tags": ["pasta", "carbonara", "italian"],
+            "dietary_flags": ["none"],
+            "prep_time": 15, "cook_time": 20, "servings": 2,
+        },
+        {
+            "title": "Gabagool Sandwich",
+            "description": "A delicious Italian-inspired sandwich.",
+            "category_id": categories[1],
+            "author_user_id": users[21],
+            "ingredients": [
+                { "name": "gabagool",         "amount": 100, "unit": "g" },
+                { "name": "italian bread",    "amount": 1,   "unit": "loaf" },
+                { "name": "provolone cheese", "amount": 50,  "unit": "g" },
+                { "name": "lettuce",          "amount": 1,   "unit": "cup" },
+                { "name": "tomato",           "amount": 1,   "unit": "whole" },
+                { "name": "italian dressing", "amount": 2,   "unit": "tbsp" },
+            ],
+            "tags": ["sandwich", "italian"],
+            "dietary_flags": ["none"],
+            "prep_time": 10, "cook_time": 0, "servings": 2,
+        },
+        {
+            "title": "Cordon Bleu",
+            "description": "A classic French stuffed chicken dish.",
+            "category_id": categories[2],
+            "author_user_id": users[22],
+            "ingredients": [
+                { "name": "chicken breast", "amount": 2,  "unit": "pieces" },
+                { "name": "bacon",          "amount": 4,  "unit": "slices" },
+                { "name": "swiss cheese",   "amount": 4,  "unit": "slices" },
+                { "name": "breadcrumbs",    "amount": 1,  "unit": "cup" },
+            ],
+            "tags": ["chicken", "french"],
+            "dietary_flags": ["none"],
+            "prep_time": 15, "cook_time": 25, "servings": 2,
+        },
+        {
+            "title": "Four Cheese Mac and Cheese",
+            "description": "A cheesy comfort food classic.",
+            "category_id": categories[6],
+            "author_user_id": users[23],
+            "ingredients": [
+                { "name": "macaroni",          "amount": 200, "unit": "g" },
+                { "name": "cheddar cheese",    "amount": 100, "unit": "g" },
+                { "name": "mozzarella cheese", "amount": 100, "unit": "g" },
+                { "name": "parmesan cheese",   "amount": 50,  "unit": "g" },
+                { "name": "milk",              "amount": 1,   "unit": "cup" },
+            ],
+            "tags": ["pasta", "cheese", "comfort"],
+            "dietary_flags": ["vegetarian"],
+            "prep_time": 10, "cook_time": 20, "servings": 4,
+        },
+        {
+            "title": "Buffalo Wings",
+            "description": "Spicy chicken wings for game day.",
+            "category_id": categories[4],
+            "author_user_id": users[24],
+            "ingredients": [
+                { "name": "chicken wings",  "amount": 500, "unit": "g" },
+                { "name": "buffalo sauce",  "amount": 1,   "unit": "cup" },
+                { "name": "butter",         "amount": 2,   "unit": "tbsp" },
+                { "name": "garlic powder",  "amount": 1,   "unit": "tsp" },
+            ],
+            "tags": ["chicken", "spicy", "snack"],
+            "dietary_flags": ["none"],
+            "prep_time": 15, "cook_time": 25, "servings": 4,
+        },
+        {
+            "title": "Jalapeno Poppers",
+            "description": "Spicy stuffed peppers.",
+            "category_id": categories[5],
+            "author_user_id": users[25],
+            "ingredients": [
+                { "name": "jalapeno peppers",   "amount": 10,  "unit": "whole" },
+                { "name": "cream cheese",        "amount": 100, "unit": "g" },
+                { "name": "garlic",              "amount": 2,   "unit": "cloves" },
+                { "name": "panko breadcrumbs",   "amount": 1,   "unit": "cup" },
+                { "name": "parmesan cheese",     "amount": 50,  "unit": "g" },
+            ],
+            "tags": ["appetizer", "spicy"],
+            "dietary_flags": ["vegetarian"],
+            "prep_time": 20, "cook_time": 15, "servings": 4,
+        },
+        {
+            "title": "Chocolate Chip Cookies",
+            "description": "Classic cookies for dessert.",
+            "category_id": categories[3],
+            "author_user_id": users[26],
+            "ingredients": [
+                { "name": "flour",           "amount": 2,   "unit": "cups" },
+                { "name": "sugar",           "amount": 1,   "unit": "cup" },
+                { "name": "butter",          "amount": 1,   "unit": "cup" },
+                { "name": "eggs",            "amount": 2,   "unit": "whole" },
+                { "name": "chocolate chips", "amount": 1,   "unit": "cup" },
+                { "name": "vanilla extract", "amount": 1,   "unit": "tsp" },
+                { "name": "baking soda",     "amount": 1,   "unit": "tsp" },
+            ],
+            "tags": ["dessert", "cookies", "baked"],
+            "dietary_flags": ["vegetarian"],
+            "prep_time": 15, "cook_time": 10, "servings": 24,
+        },
     ]).inserted_ids
+    print(f"Seeded {len(recipes)} recipes.")
 
     # ── REVIEWS ──
+    # TODO expand to 25+ documents
     reviews = db.reviews.insert_many([
-        {
-            "user_id":   users[0],
-            "recipe_id": recipes[0],
-            "rating":    5,
-            "comment":   "Perfect level of spice.",
-        },
+        { "user_id": users[0], "recipe_id": recipes[0], "rating": 5, "comment": "Perfect level of spice.", "created_at": datetime.utcnow() },
     ]).inserted_ids
+    print(f"Seeded {len(reviews)} reviews.")
 
     # ── SAVED RECIPES ──
+    # TODO: expand to 25+ documents
     saved = db.saved_recipes.insert_many([
-        { "user_id": users[0], "recipe_id": recipes[0] },
+        { "user_id": users[0], "recipe_id": recipes[0], "saved_at": datetime.utcnow() },
     ]).inserted_ids
+    print(f"Seeded {len(saved)} saved recipes.")
 
     # ── MEAL PLANS ──
+    # TODO: expand to 25+ documents
     meal_plans = db.meal_plans.insert_many([
         {
             "user_id": users[0],
@@ -893,8 +526,15 @@ def seed():
             "notes": "Test week.",
         },
     ]).inserted_ids
+    print(f"Seeded {len(meal_plans)} meal plans.")
 
-    print("✓ Seed complete — 1 document per collection.")
+    print("\n✓ Seed complete!")
+    print(f"  Users:        {len(users)}")
+    print(f"  Categories:   {len(categories)}")
+    print(f"  Recipes:      {len(recipes)}")
+    print(f"  Reviews:      {len(reviews)}")
+    print(f"  Saved:        {len(saved)}")
+    print(f"  Meal plans:   {len(meal_plans)}")
 
 if __name__ == "__main__":
     seed()
