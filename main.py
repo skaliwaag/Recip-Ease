@@ -13,7 +13,7 @@ password = os.getenv("MONGO_PASSWORD")
 
 # add connection string from MongoDB
 # we will need the db_passord from the .env file to complete this connection string
-uri = mongodb+srv://roneys_db_user:<db_password>@recipe-ease.ajuvsog.mongodb.net/?appName=Recipe-Ease
+uri = "mongodb+srv://roneys_db_user:<db_password>@recipe-ease.ajuvsog.mongodb.net/?appName=Recipe-Ease"
 
 # create connection to client
 # This will work once we add the cnnection string from mongoDB...
