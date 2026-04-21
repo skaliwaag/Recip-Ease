@@ -1,3 +1,3 @@
-from flask import Blueprint
+from fastapi import APIRouter
 
-reviews_bp = Blueprint("reviews", __name__)
+router = APIRouter()

@@ -1,3 +1,3 @@
-from flask import Blueprint
+from fastapi import APIRouter
 
-meal_plans_bp = Blueprint("meal_plans", __name__)
+router = APIRouter()

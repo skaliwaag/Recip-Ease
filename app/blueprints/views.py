@@ -1,17 +1,32 @@
-from flask import Blueprint, render_template, request, redirect, url_for, flash
+from fastapi import APIRouter, Request
+from fastapi.responses import HTMLResponse, RedirectResponse, Response
+from fastapi.templating import Jinja2Templates
 from app.db import get_db
 from bson import ObjectId
 from datetime import datetime, timezone
 
-views_bp = Blueprint("views", __name__)
+router = APIRouter()
+templates = Jinja2Templates(directory="app/templates")
+
+DIETARY_FLAGS = ["vegan", "vegetarian", "gluten-free", "dairy-free", "nut-free"]
 
 
-@views_bp.route("/")
-def index():
+def flash(request: Request, message: str, category: str = "info"):
+    if "flash_messages" not in request.session:
+        request.session["flash_messages"] = []
+    request.session["flash_messages"].append([category, message])
+
+
+def pop_flash(request: Request):
+    return request.session.pop("flash_messages", [])
+
+
+@router.get("/", response_class=HTMLResponse)
+def index(request: Request, q: str = "", flag: str = "", category: str = ""):
     db = get_db()
-    q        = request.args.get("q", "").strip()
-    flag     = request.args.get("flag", "").strip()
-    category = request.args.get("category", "").strip()
+    q = q.strip()
+    flag = flag.strip()
+    category = category.strip()
 
     query = {}
     if q:
@@ -32,44 +47,20 @@ def index():
     for c in categories:
         c["_id"] = str(c["_id"])
 
-    dietary_flags = ["vegan", "vegetarian", "gluten-free", "dairy-free", "nut-free"]
+    return templates.TemplateResponse(request=request, name="index.html", context={
+        "recipes": recipes,
+        "categories": categories,
+        "dietary_flags": DIETARY_FLAGS,
+        "q": q,
+        "flag": flag,
+        "category": category,
+        "flash_messages": pop_flash(request),
+    })
 
-    return render_template("index.html",
-                           recipes=recipes,
-                           categories=categories,
-                           dietary_flags=dietary_flags,
-                           q=q, flag=flag, category=category)
 
-
-@views_bp.route("/recipe/new", methods=["GET", "POST"])
-def recipe_new():
+@router.get("/recipe/new", response_class=HTMLResponse)
+def recipe_new(request: Request):
     db = get_db()
-    if request.method == "POST":
-        f = request.form
-        try:
-            category_oid = ObjectId(f["categoryId"])
-            author_oid   = ObjectId(f["authorUserId"])
-        except Exception:
-            flash("Invalid category or author selection.", "danger")
-            return redirect(url_for("views.recipe_new"))
-
-        tags          = [t.strip() for t in f.get("tags", "").split(",") if t.strip()]
-        dietary_flags = request.form.getlist("dietaryFlags")
-
-        db.recipes.insert_one({
-            "title":        f["title"],
-            "description":  f["description"],
-            "categoryId":   category_oid,
-            "authorUserId": author_oid,
-            "ingredients":  [{"name": i.strip()} for i in f.get("ingredients", "").split("\n") if i.strip()],
-            "prepTime":     int(f.get("prepTime", 0)),
-            "cookTime":     int(f.get("cookTime", 0)),
-            "servings":     int(f.get("servings", 1)),
-            "tags":         tags,
-            "dietaryFlags": dietary_flags,
-        })
-        return redirect(url_for("views.index"))
-
     categories = list(db.categories.find({}).sort("name", 1))
     for c in categories:
         c["_id"] = str(c["_id"])
@@ -78,21 +69,50 @@ def recipe_new():
     for u in users:
         u["_id"] = str(u["_id"])
 
-    dietary_flags = ["vegan", "vegetarian", "gluten-free", "dairy-free", "nut-free"]
+    return templates.TemplateResponse(request=request, name="recipe_form.html", context={
+        "categories": categories,
+        "users": users,
+        "dietary_flags": DIETARY_FLAGS,
+        "flash_messages": pop_flash(request),
+    })
 
-    return render_template("recipe_form.html",
-                           categories=categories,
-                           users=users,
-                           dietary_flags=dietary_flags)
+
+@router.post("/recipe/new")
+async def recipe_new_post(request: Request):
+    db = get_db()
+    form = await request.form()
+    try:
+        category_oid = ObjectId(form["categoryId"])
+        author_oid = ObjectId(form["authorUserId"])
+    except Exception:
+        flash(request, "Invalid category or author selection.", "danger")
+        return RedirectResponse("/recipe/new", status_code=303)
+
+    tags = [t.strip() for t in form.get("tags", "").split(",") if t.strip()]
+    dietary_flags = form.getlist("dietaryFlags")
+
+    db.recipes.insert_one({
+        "title": form["title"],
+        "description": form["description"],
+        "categoryId": category_oid,
+        "authorUserId": author_oid,
+        "ingredients": [{"name": i.strip()} for i in form.get("ingredients", "").split("\n") if i.strip()],
+        "prepTime": int(form.get("prepTime", 0)),
+        "cookTime": int(form.get("cookTime", 0)),
+        "servings": int(form.get("servings", 1)),
+        "tags": tags,
+        "dietaryFlags": dietary_flags,
+    })
+    return RedirectResponse("/", status_code=303)
 
 
-@views_bp.route("/recipe/<recipe_id>")
-def recipe_detail(recipe_id):
+@router.get("/recipe/{recipe_id}", response_class=HTMLResponse)
+def recipe_detail(recipe_id: str, request: Request):
     db = get_db()
     try:
         oid = ObjectId(recipe_id)
     except Exception:
-        return "Invalid recipe ID", 400
+        return Response(content="Invalid recipe ID", status_code=400)
 
     pipeline = [
         {"$match": {"_id": oid}},
@@ -105,7 +125,7 @@ def recipe_detail(recipe_id):
     ]
     results = list(db.recipes.aggregate(pipeline))
     if not results:
-        return "Recipe not found", 404
+        return Response(content="Recipe not found", status_code=404)
 
     recipe = results[0]
     recipe["_id"]          = str(recipe["_id"])
@@ -124,59 +144,64 @@ def recipe_detail(recipe_id):
     for u in users:
         u["_id"] = str(u["_id"])
 
-    return render_template("recipe_detail.html", recipe=recipe, users=users)
+    return templates.TemplateResponse(request=request, name="recipe_detail.html", context={
+        "recipe": recipe,
+        "users": users,
+        "flash_messages": pop_flash(request),
+    })
 
 
-@views_bp.route("/recipe/<recipe_id>/delete", methods=["POST"])
-def recipe_delete(recipe_id):
+@router.post("/recipe/{recipe_id}/delete")
+def recipe_delete(recipe_id: str, request: Request):
     db = get_db()
     try:
         oid = ObjectId(recipe_id)
     except Exception:
-        return "Invalid recipe ID", 400
+        return Response(content="Invalid recipe ID", status_code=400)
     db.recipes.delete_one({"_id": oid})
-    return redirect(url_for("views.index"))
+    return RedirectResponse("/", status_code=303)
 
 
-@views_bp.route("/recipe/<recipe_id>/review", methods=["POST"])
-def review_create(recipe_id):
+@router.post("/recipe/{recipe_id}/review")
+async def review_create(recipe_id: str, request: Request):
     db = get_db()
-    f  = request.form
+    form = await request.form()
     try:
         recipe_oid = ObjectId(recipe_id)
-        user_oid   = ObjectId(f["userId"])
-        rating     = int(f["rating"])
+        user_oid   = ObjectId(form["userId"])
+        rating     = int(form["rating"])
     except Exception:
-        flash("Invalid review data.", "danger")
-        return redirect(url_for("views.recipe_detail", recipe_id=recipe_id))
+        flash(request, "Invalid review data.", "danger")
+        return RedirectResponse(f"/recipe/{recipe_id}", status_code=303)
 
     if not 1 <= rating <= 5:
-        flash("Rating must be between 1 and 5.", "danger")
-        return redirect(url_for("views.recipe_detail", recipe_id=recipe_id))
+        flash(request, "Rating must be between 1 and 5.", "danger")
+        return RedirectResponse(f"/recipe/{recipe_id}", status_code=303)
 
     db.reviews.insert_one({
         "recipeId":       recipe_oid,
         "userId":         user_oid,
         "rating":         rating,
-        "comment":        f.get("comment", ""),
+        "comment":        form.get("comment", ""),
         "reviewDateTime": datetime.now(timezone.utc),
     })
-    return redirect(url_for("views.recipe_detail", recipe_id=recipe_id))
+    return RedirectResponse(f"/recipe/{recipe_id}", status_code=303)
 
 
-@views_bp.route("/review/<review_id>/delete", methods=["POST"])
-def review_delete(review_id):
-    db        = get_db()
-    recipe_id = request.form.get("recipe_id", "")
+@router.post("/review/{review_id}/delete")
+async def review_delete(review_id: str, request: Request):
+    db = get_db()
+    form = await request.form()
+    recipe_id = form.get("recipe_id", "")
     try:
         db.reviews.delete_one({"_id": ObjectId(review_id)})
     except Exception:
         pass
-    return redirect(url_for("views.recipe_detail", recipe_id=recipe_id))
+    return RedirectResponse(f"/recipe/{recipe_id}", status_code=303)
 
 
-@views_bp.route("/stats")
-def stats():
+@router.get("/stats", response_class=HTMLResponse)
+def stats(request: Request):
     db = get_db()
 
     recipes_per_category = list(db.recipes.aggregate([
@@ -210,7 +235,9 @@ def stats():
     for d in most_saved:
         d["_id"] = str(d["_id"])
 
-    return render_template("dashboard.html",
-                           recipes_per_category=recipes_per_category,
-                           top_rated=top_rated,
-                           most_saved=most_saved)
+    return templates.TemplateResponse(request=request, name="dashboard.html", context={
+        "recipes_per_category": recipes_per_category,
+        "top_rated": top_rated,
+        "most_saved": most_saved,
+        "flash_messages": pop_flash(request),
+    })

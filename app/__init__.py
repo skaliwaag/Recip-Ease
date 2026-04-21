@@ -1,24 +1,28 @@
-from flask import Flask
+from fastapi import FastAPI
+from fastapi.staticfiles import StaticFiles
+from starlette.middleware.sessions import SessionMiddleware
+
 
 def create_app():
-    app = Flask(__name__)
+    app = FastAPI(title="Recip-Ease")
 
-    from app.blueprints.recipes import recipes_bp
-    from app.blueprints.users import users_bp
-    from app.blueprints.meal_plans import meal_plans_bp
-    from app.blueprints.reviews import reviews_bp
-    from app.blueprints.recommendations import recommendations_bp
-    from app.blueprints.dashboard import dashboard_bp
-    from app.blueprints.views import views_bp
+    app.add_middleware(SessionMiddleware, secret_key="recip-ease-dev-key")
+    app.mount("/static", StaticFiles(directory="app/static"), name="static")
 
-    app.register_blueprint(recipes_bp)
-    app.register_blueprint(users_bp)
-    app.register_blueprint(meal_plans_bp)
-    app.register_blueprint(reviews_bp)
-    app.register_blueprint(recommendations_bp)
-    app.register_blueprint(dashboard_bp)
-    app.register_blueprint(views_bp)
+    from app.blueprints.views import router as views_router
+    from app.blueprints.dashboard import router as dashboard_router
+    from app.blueprints.recommendations import router as recommendations_router
+    from app.blueprints.recipes import router as recipes_router
+    from app.blueprints.users import router as users_router
+    from app.blueprints.meal_plans import router as meal_plans_router
+    from app.blueprints.reviews import router as reviews_router
 
-    app.secret_key = "recip-ease-dev-key"
+    app.include_router(views_router)
+    app.include_router(dashboard_router)
+    app.include_router(recommendations_router)
+    app.include_router(recipes_router)
+    app.include_router(users_router)
+    app.include_router(meal_plans_router)
+    app.include_router(reviews_router)
 
     return app

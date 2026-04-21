@@ -4,7 +4,7 @@
 {% block content %}
 <nav aria-label="breadcrumb" class="mb-3">
   <ol class="breadcrumb">
-    <li class="breadcrumb-item"><a href="{{ url_for('views.index') }}">Recipes</a></li>
+    <li class="breadcrumb-item"><a href="{{ url_for('index') }}">Recipes</a></li>
     <li class="breadcrumb-item active">{{ recipe.title }}</li>
   </ol>
 </nav>
@@ -14,7 +14,7 @@
   <div class="col-md-8">
     <div class="d-flex justify-content-between align-items-start">
       <h2>{{ recipe.title }}</h2>
-      <form method="POST" action="{{ url_for('views.recipe_delete', recipe_id=recipe._id) }}"
+      <form method="POST" action="{{ url_for('recipe_delete', recipe_id=recipe._id) }}"
             onsubmit="return confirm('Delete this recipe?')">
         <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
       </form>
@@ -88,7 +88,7 @@
     <div class="card mb-3">
       <div class="card-body">
         <h6 class="card-title">Leave a Review</h6>
-        <form method="POST" action="{{ url_for('views.review_create', recipe_id=recipe._id) }}">
+        <form method="POST" action="{{ url_for('review_create', recipe_id=recipe._id) }}">
           <div class="mb-2">
             <select name="userId" class="form-select form-select-sm" required>
               <option value="">Select user…</option>
@@ -120,7 +120,7 @@
         <div class="card-body py-2 px-3">
           <div class="d-flex justify-content-between">
             <strong>{{ review.rating }}/5</strong>
-            <form method="POST" action="{{ url_for('views.review_delete', review_id=review._id) }}">
+            <form method="POST" action="{{ url_for('review_delete', review_id=review._id) }}">
               <input type="hidden" name="recipe_id" value="{{ recipe._id }}">
               <button type="submit" class="btn btn-sm btn-link text-danger p-0">Remove</button>
             </form>
