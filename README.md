@@ -165,4 +165,4 @@ Each statistic is computed with a separate aggregation pipeline using `$group`, 
 
 ## AI Assistance Disclosure
 
-AI coding tools were used to assist with code generation during development. All team members understand and can explain the database design, collection structure, queries, and application logic.
+Claude Code (Anthropic) was used to assist with code generation during development. All team members understand and can explain the database design, collection structure, queries, and application logic.
