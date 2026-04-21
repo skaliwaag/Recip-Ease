@@ -13,3 +13,5 @@ Recipe Management Application and Ingredient Substitution Manager
     - add content to pages
     - get stylesheet done
     
+# .env.example
+4/21/26 Contains information on how to create your own .env file locally
