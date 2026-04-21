@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+{% block title %}Dashboard — Recip-Ease{% endblock %}
+
+{% block content %}
+<h2 class="mb-4">Dashboard</h2>
+
+<div class="row g-4">
+
+  <!-- Recipes per Category -->
+  <div class="col-md-4">
+    <div class="card h-100">
+      <div class="card-header fw-bold">Recipes by Category</div>
+      <ul class="list-group list-group-flush">
+        {% for item in recipes_per_category %}
+        <li class="list-group-item d-flex justify-content-between align-items-center">
+          {{ item.name or "Uncategorized" }}
+          <span class="badge bg-primary rounded-pill">{{ item.count }}</span>
+        </li>
+        {% endfor %}
+      </ul>
+    </div>
+  </div>
+
+  <!-- Top Rated -->
+  <div class="col-md-4">
+    <div class="card h-100">
+      <div class="card-header fw-bold">Top Rated Recipes</div>
+      <ul class="list-group list-group-flush">
+        {% for item in top_rated %}
+        <li class="list-group-item d-flex justify-content-between align-items-center">
+          <a href="{{ url_for('views.recipe_detail', recipe_id=item._id) }}" class="text-decoration-none">
+            {{ item.title }}
+          </a>
+          <span class="badge bg-warning text-dark rounded-pill">
+            {{ "%.1f"|format(item.avgRating) }} / 5
+          </span>
+        </li>
+        {% endfor %}
+      </ul>
+    </div>
+  </div>
+
+  <!-- Most Saved -->
+  <div class="col-md-4">
+    <div class="card h-100">
+      <div class="card-header fw-bold">Most Bookmarked</div>
+      <ul class="list-group list-group-flush">
+        {% for item in most_saved %}
+        <li class="list-group-item d-flex justify-content-between align-items-center">
+          <a href="{{ url_for('views.recipe_detail', recipe_id=item._id) }}" class="text-decoration-none">
+            {{ item.title }}
+          </a>
+          <span class="badge bg-success rounded-pill">{{ item.saveCount }} saves</span>
+        </li>
+        {% endfor %}
+      </ul>
+    </div>
+  </div>
+
+</div>
+{% endblock %}

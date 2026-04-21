@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+{% block title %}Add Recipe — Recip-Ease{% endblock %}
+
+{% block content %}
+<h2 class="mb-4">Add New Recipe</h2>
+
+<form method="POST" action="{{ url_for('views.recipe_new') }}" class="row g-3">
+
+  <div class="col-md-8">
+    <label class="form-label">Title</label>
+    <input type="text" name="title" class="form-control" required>
+  </div>
+
+  <div class="col-md-4">
+    <label class="form-label">Category</label>
+    <select name="categoryId" class="form-select" required>
+      <option value="">Select…</option>
+      {% for c in categories %}
+        <option value="{{ c._id }}">{{ c.name }}</option>
+      {% endfor %}
+    </select>
+  </div>
+
+  <div class="col-12">
+    <label class="form-label">Description</label>
+    <textarea name="description" class="form-control" rows="3" required></textarea>
+  </div>
+
+  <div class="col-12">
+    <label class="form-label">Ingredients <span class="text-muted small">(one per line)</span></label>
+    <textarea name="ingredients" class="form-control" rows="6" placeholder="2 cups flour&#10;1 tsp salt&#10;3 eggs"></textarea>
+  </div>
+
+  <div class="col-md-3">
+    <label class="form-label">Prep Time (min)</label>
+    <input type="number" name="prepTime" class="form-control" min="0" value="0" required>
+  </div>
+
+  <div class="col-md-3">
+    <label class="form-label">Cook Time (min)</label>
+    <input type="number" name="cookTime" class="form-control" min="0" value="0" required>
+  </div>
+
+  <div class="col-md-3">
+    <label class="form-label">Servings</label>
+    <input type="number" name="servings" class="form-control" min="1" value="4" required>
+  </div>
+
+  <div class="col-md-3">
+    <label class="form-label">Author</label>
+    <select name="authorUserId" class="form-select" required>
+      <option value="">Select user…</option>
+      {% for u in users %}
+        <option value="{{ u._id }}">{{ u.name }}</option>
+      {% endfor %}
+    </select>
+  </div>
+
+  <div class="col-md-8">
+    <label class="form-label">Tags <span class="text-muted small">(comma-separated)</span></label>
+    <input type="text" name="tags" class="form-control" placeholder="quick, easy, weeknight">
+  </div>
+
+  <div class="col-md-4">
+    <label class="form-label d-block">Dietary Flags</label>
+    {% for f in dietary_flags %}
+      <div class="form-check form-check-inline">
+        <input class="form-check-input" type="checkbox" name="dietaryFlags" value="{{ f }}" id="flag_{{ f }}">
+        <label class="form-check-label" for="flag_{{ f }}">{{ f }}</label>
+      </div>
+    {% endfor %}
+  </div>
+
+  <div class="col-12 d-flex gap-2">
+    <button type="submit" class="btn btn-primary">Save Recipe</button>
+    <a href="{{ url_for('views.index') }}" class="btn btn-outline-secondary">Cancel</a>
+  </div>
+
+</form>
+{% endblock %}

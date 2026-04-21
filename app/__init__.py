@@ -7,10 +7,18 @@ def create_app():
     from app.blueprints.users import users_bp
     from app.blueprints.meal_plans import meal_plans_bp
     from app.blueprints.reviews import reviews_bp
+    from app.blueprints.recommendations import recommendations_bp
+    from app.blueprints.dashboard import dashboard_bp
+    from app.blueprints.views import views_bp
 
     app.register_blueprint(recipes_bp)
     app.register_blueprint(users_bp)
     app.register_blueprint(meal_plans_bp)
     app.register_blueprint(reviews_bp)
+    app.register_blueprint(recommendations_bp)
+    app.register_blueprint(dashboard_bp)
+    app.register_blueprint(views_bp)
+
+    app.secret_key = "recip-ease-dev-key"
 
     return app

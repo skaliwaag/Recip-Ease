@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+{% block title %}Recipes — Recip-Ease{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h2>Recipes</h2>
+  <a href="{{ url_for('views.recipe_new') }}" class="btn btn-primary">+ Add Recipe</a>
+</div>
+
+<!-- Search & Filter -->
+<form method="GET" action="{{ url_for('views.index') }}" class="row g-2 mb-4">
+  <div class="col-md-5">
+    <input type="text" name="q" class="form-control" placeholder="Search recipes..." value="{{ q }}">
+  </div>
+  <div class="col-md-3">
+    <select name="flag" class="form-select">
+      <option value="">All dietary flags</option>
+      {% for f in dietary_flags %}
+        <option value="{{ f }}" {% if flag == f %}selected{% endif %}>{{ f }}</option>
+      {% endfor %}
+    </select>
+  </div>
+  <div class="col-md-3">
+    <select name="category" class="form-select">
+      <option value="">All categories</option>
+      {% for c in categories %}
+        <option value="{{ c._id }}" {% if category == c._id %}selected{% endif %}>{{ c.name }}</option>
+      {% endfor %}
+    </select>
+  </div>
+  <div class="col-md-1">
+    <button type="submit" class="btn btn-secondary w-100">Go</button>
+  </div>
+</form>
+
+{% if q or flag or category %}
+  <p class="text-muted small">
+    Showing {{ recipes|length }} result(s)
+    {% if q %} for "<strong>{{ q }}</strong>"{% endif %}
+    {% if flag %} · {{ flag }}{% endif %}
+    {% if category %} · selected category{% endif %}
+    — <a href="{{ url_for('views.index') }}">clear filters</a>
+  </p>
+{% endif %}
+
+<!-- Recipe Cards -->
+{% if recipes %}
+  <div class="row row-cols-1 row-cols-md-3 g-3">
+    {% for recipe in recipes %}
+    <div class="col">
+      <div class="card h-100">
+        <div class="card-body">
+          <h5 class="card-title">
+            <a href="{{ url_for('views.recipe_detail', recipe_id=recipe._id) }}" class="text-decoration-none">
+              {{ recipe.title }}
+            </a>
+          </h5>
+          <p class="card-text text-muted small">{{ recipe.description[:100] }}{% if recipe.description|length > 100 %}…{% endif %}</p>
+          {% if recipe.dietaryFlags %}
+            <div>
+              {% for f in recipe.dietaryFlags %}
+                <span class="badge bg-success me-1">{{ f }}</span>
+              {% endfor %}
+            </div>
+          {% endif %}
+        </div>
+        <div class="card-footer text-muted small">
+          Prep: {{ recipe.prepTime }} min &nbsp;|&nbsp; Cook: {{ recipe.cookTime }} min &nbsp;|&nbsp; Serves: {{ recipe.servings }}
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+{% else %}
+  <p class="text-muted">No recipes found.</p>
+{% endif %}
+{% endblock %}
