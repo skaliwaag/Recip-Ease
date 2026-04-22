@@ -5,3 +5,10 @@ worklog.txt
 __pycache__/
 *.pyc
 *.sqlite
+
+# Local-only files
+.claude/
+*.zip
+*.html
+*.pdf
+*.docx
