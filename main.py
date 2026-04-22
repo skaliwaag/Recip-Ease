@@ -2,6 +2,7 @@ from dotenv import load_dotenv
 import os 
 from pymongo.mongo_client import MongoClient
 from pymongo.server_api import ServerApi
+from flask import Flask, render_template
 
 # load the environment variables from the .env file
 load_dotenv()
@@ -19,8 +20,21 @@ uri = f"mongodb+srv://{username}:{password}@recipe-ease.ajuvsog.mongodb.net/?app
 client = MongoClient(uri, server_api=ServerApi('1'))
 
 # ping the server to check the connection
-client.admin.command ('ping')
-print("We are connected!")
+try:
+    client.admin.command('ping')
+    print("Pinged your deployment. You successfully connected to MongoDB!")
+except Exception as e:
+    print(e)
 
 # Connect to the database
 db = client["Recipe-Ease"]
+
+# Connect to users collection
+collection = db["users"]
+
+
+@app.route("/")
+def home():
+    return render_template("index.html")
+
+

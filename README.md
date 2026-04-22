@@ -6,12 +6,15 @@ Recipe Management Application and Ingredient Substitution Manager
     To do:
     - Fix this
     - add CRUD
+4/21/26 FIXED connection to MongoDB
 
-# recip-ease folder
+# recip-ease/
+# templates/
 4/15/25 Contains html and css files for webpages
     To do:
     - add content to pages
     - get stylesheet done
+4/21/25 All .html and .css folders moved from recip-ease/ to templates/ so for use of python flask package
     
 # .env.example
 4/21/26 Contains information on how to create your own .env file locally
