@@ -1,3 +1,4 @@
+# views.py — HTML routes: home/search, recipe CRUD, review CRUD, stats page
 from fastapi import APIRouter, Request
 from fastapi.responses import HTMLResponse, RedirectResponse, Response
 from fastapi.templating import Jinja2Templates
@@ -11,6 +12,7 @@ templates = Jinja2Templates(directory="app/templates")
 DIETARY_FLAGS = ["vegan", "vegetarian", "gluten-free", "dairy-free", "nut-free"]
 
 
+# Stores a message in the session so the next page can display it after a redirect
 def flash(request: Request, message: str, category: str = "info"):
     if "flash_messages" not in request.session:
         request.session["flash_messages"] = []
@@ -30,6 +32,7 @@ def index(request: Request, q: str = "", flag: str = "", category: str = ""):
 
     query = {}
     if q:
+        # $text search requires the text index on recipes.title — see create_indexes.py
         query["$text"] = {"$search": q}
     if flag:
         query["dietaryFlags"] = flag
@@ -114,6 +117,7 @@ def recipe_detail(recipe_id: str, request: Request):
     except Exception:
         return Response(content="Invalid recipe ID", status_code=400)
 
+    # Single pipeline joins category, author, and reviews and computes avgRating in one query
     pipeline = [
         {"$match": {"_id": oid}},
         {"$lookup": {"from": "categories", "localField": "categoryId",   "foreignField": "_id", "as": "category"}},

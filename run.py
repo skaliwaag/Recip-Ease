@@ -1,3 +1,4 @@
+# run.py — entry point; start the app with: uvicorn run:app --reload
 import uvicorn
 from dotenv import load_dotenv
 import os

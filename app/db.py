@@ -1,3 +1,4 @@
+# db.py — connects to Atlas and returns the database; called at the top of each route
 from pymongo import MongoClient
 import os
 

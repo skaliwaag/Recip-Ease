@@ -1,3 +1,5 @@
+# dashboard.py — JSON API for stats data (recipes per category, top rated, most saved)
+# The HTML stats page lives in views.py /stats
 from fastapi import APIRouter
 from app.db import get_db
 

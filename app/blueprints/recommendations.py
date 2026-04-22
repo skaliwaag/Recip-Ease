@@ -1,3 +1,4 @@
+# recommendations.py — returns top 3 recipes matching a user's dietary prefs and favorite categories
 from fastapi import APIRouter
 from fastapi.responses import JSONResponse
 from app.db import get_db
@@ -40,6 +41,7 @@ def get_recommendations(user_id: str):
     if fav_categories:
         conditions.append({"categoryId": {"$in": fav_categories}})
 
+    # $or matches recipes that fit any of the user's preferences; empty filter returns all
     match_filter = {"$or": conditions} if conditions else {}
 
     pipeline = [
