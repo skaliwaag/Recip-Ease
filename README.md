@@ -29,10 +29,10 @@ recip-ease/
 │       ├── views.py         # HTML routes: home, recipe CRUD, reviews, stats
 │       ├── dashboard.py     # JSON API — summary stats (Advanced Feature)
 │       ├── recommendations.py  # JSON API — recipe recommendations (Advanced Feature)
-│       ├── recipes.py       # Stub — recipe JSON API routes
-│       ├── users.py         # Stub — user account routes
-│       ├── reviews.py       # Stub — review API routes
-│       └── meal_plans.py    # Stub — meal plan routes
+│       ├── recipes.py       # Recipe JSON API — list, create, update, delete
+│       ├── users.py         # User routes — list, detail, create
+│       ├── reviews.py       # Review API — list, create, delete
+│       └── meal_plans.py    # Meal plan routes — list, create, update, delete
 ├── run.py                   # Entry point (uvicorn)
 ├── seed_db.py               # One-time script: populate database with sample data
 ├── create_indexes.py        # One-time script: create Atlas indexes
@@ -130,6 +130,21 @@ The app will be available at `http://127.0.0.1:8000`.
 
 | Method | Route | Description |
 |--------|-------|-------------|
+| GET | `/recipes` | List all recipes. Supports `?q=`, `?flag=`, `?category=` |
+| GET | `/recipes/{id}` | Recipe detail with category, author, reviews, avg rating |
+| POST | `/recipes` | Create a recipe |
+| PUT | `/recipes/{id}` | Update a recipe |
+| DELETE | `/recipes/{id}` | Delete a recipe |
+| GET | `/users` | List all users |
+| GET | `/users/{id}` | User detail with saved recipes and meal plans |
+| POST | `/users` | Create a user |
+| GET | `/reviews/{recipe_id}` | All reviews for a recipe |
+| POST | `/reviews` | Submit a review (rating 1–5 required) |
+| DELETE | `/reviews/{id}` | Delete a review |
+| GET | `/meal-plans/{user_id}` | All meal plans for a user |
+| POST | `/meal-plans` | Create a meal plan |
+| PUT | `/meal-plans/{id}` | Update a meal plan |
+| DELETE | `/meal-plans/{id}` | Delete a meal plan |
 | GET | `/recommendations/{user_id}` | Top 3 recipes matching user's dietary prefs and favorite categories |
 | GET | `/dashboard` | Summary stats: recipes per category, top-rated, most saved |
 
