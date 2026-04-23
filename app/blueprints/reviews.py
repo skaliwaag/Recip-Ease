@@ -1,64 +1,88 @@
-# reviews.py — API routes for recipe reviews (create, delete)
-# HTML review routes (POST from recipe detail page) are handled in views.py
-from fastapi import APIRouter, Request
-from fastapi.responses import JSONResponse
+from flask import Blueprint, jsonify, request
 from app.db import get_db
 from bson import ObjectId
 from datetime import datetime, timezone
 
-router = APIRouter()
+reviews_bp = Blueprint("reviews", __name__)
 
 
-@router.get("/reviews/{recipe_id}")
-def get_reviews(recipe_id: str):
+def _serialize(review):
+    review["_id"] = str(review["_id"])
+    if "user_id" in review:
+        review["user_id"] = str(review["user_id"])
+    if "recipe_id" in review:
+        review["recipe_id"] = str(review["recipe_id"])
+    return review
+
+
+@reviews_bp.route("/reviews", methods=["GET"])
+def get_all_reviews():
+    db = get_db()
+    reviews = list(db.reviews.find().sort("created_at", -1))
+    return jsonify([_serialize(r) for r in reviews]), 200
+
+
+@reviews_bp.route("/reviews/<recipe_id>", methods=["GET"])
+def get_reviews_for_recipe(recipe_id):
     db = get_db()
     try:
         oid = ObjectId(recipe_id)
     except Exception:
-        return JSONResponse({"error": "Invalid recipe_id"}, status_code=400)
-
-    reviews = list(db.reviews.find({"recipeId": oid}).sort("reviewDateTime", -1))
-    for r in reviews:
-        r["_id"]      = str(r["_id"])
-        r["userId"]   = str(r["userId"])
-        r["recipeId"] = str(r["recipeId"])
-    return reviews
+        return jsonify({"error": "Invalid recipe_id"}), 400
+    reviews = list(db.reviews.find({"recipe_id": oid}).sort("created_at", -1))
+    return jsonify([_serialize(r) for r in reviews]), 200
 
 
-@router.post("/reviews", status_code=201)
-async def create_review(request: Request):
-    db   = get_db()
-    data = await request.json()
-
-    required = ["userId", "recipeId", "rating"]
-    missing  = [f for f in required if f not in data]
+@reviews_bp.route("/reviews", methods=["POST"])
+def create_review():
+    db = get_db()
+    data = request.get_json()
+    required = ["user_id", "recipe_id", "rating"]
+    missing = [f for f in required if f not in data]
     if missing:
-        return JSONResponse({"error": f"Missing fields: {missing}"}, status_code=400)
-
+        return jsonify({"error": f"Missing fields: {missing}"}), 400
     try:
-        data["userId"]   = ObjectId(data["userId"])
-        data["recipeId"] = ObjectId(data["recipeId"])
+        data["user_id"] = ObjectId(data["user_id"])
+        data["recipe_id"] = ObjectId(data["recipe_id"])
     except Exception:
-        return JSONResponse({"error": "Invalid userId or recipeId"}, status_code=400)
-
+        return jsonify({"error": "Invalid user_id or recipe_id"}), 400
     if not isinstance(data["rating"], int) or not 1 <= data["rating"] <= 5:
-        return JSONResponse({"error": "rating must be an integer 1–5"}, status_code=400)
-
+        return jsonify({"error": "rating must be an integer 1-5"}), 400
     data.setdefault("comment", "")
-    data["reviewDateTime"] = datetime.now(timezone.utc)
+    data["created_at"] = datetime.now(timezone.utc)
     result = db.reviews.insert_one(data)
-    return JSONResponse({"inserted_id": str(result.inserted_id)}, status_code=201)
+    return jsonify({"message": "Review created successfully", "inserted_id": str(result.inserted_id)}), 201
 
 
-@router.delete("/reviews/{review_id}")
-def delete_review(review_id: str):
+@reviews_bp.route("/reviews/<review_id>", methods=["PUT"])
+def update_review(review_id):
     db = get_db()
     try:
         oid = ObjectId(review_id)
     except Exception:
-        return JSONResponse({"error": "Invalid review_id"}, status_code=400)
+        return jsonify({"error": "Invalid review_id"}), 400
+    data = request.get_json()
+    allowed = ["rating", "comment"]
+    update_fields = {k: v for k, v in data.items() if k in allowed}
+    if not update_fields:
+        return jsonify({"error": "No valid fields to update"}), 400
+    if "rating" in update_fields:
+        if not isinstance(update_fields["rating"], int) or not 1 <= update_fields["rating"] <= 5:
+            return jsonify({"error": "rating must be an integer 1-5"}), 400
+    result = db.reviews.update_one({"_id": oid}, {"$set": update_fields})
+    if result.matched_count == 0:
+        return jsonify({"error": "Review not found"}), 404
+    return jsonify({"message": "Review updated successfully"}), 200
 
+
+@reviews_bp.route("/reviews/<review_id>", methods=["DELETE"])
+def delete_review(review_id):
+    db = get_db()
+    try:
+        oid = ObjectId(review_id)
+    except Exception:
+        return jsonify({"error": "Invalid review_id"}), 400
     result = db.reviews.delete_one({"_id": oid})
     if result.deleted_count == 0:
-        return JSONResponse({"error": "Review not found"}, status_code=404)
-    return {"deleted": result.deleted_count}
+        return jsonify({"error": "Review not found"}), 404
+    return jsonify({"message": "Review deleted successfully"}), 200

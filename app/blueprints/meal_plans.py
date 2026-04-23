@@ -1,100 +1,77 @@
-# meal_plans.py — routes for creating and managing user meal plans
-from fastapi import APIRouter, Request
-from fastapi.responses import JSONResponse
+from flask import Blueprint, jsonify, request
 from app.db import get_db
 from bson import ObjectId
 
-router = APIRouter()
+meal_plans_bp = Blueprint("meal_plans", __name__)
 
 
 def _serialize(plan):
-    plan["_id"]    = str(plan["_id"])
-    plan["userId"] = str(plan["userId"])
-    for day in plan.get("days", []):
-        day["recipeId"] = str(day["recipeId"])
+    plan["_id"] = str(plan["_id"])
+    if "user_id" in plan:
+        plan["user_id"] = str(plan["user_id"])
     return plan
 
 
-@router.get("/meal-plans/{user_id}")
-def get_meal_plans(user_id: str):
+@meal_plans_bp.route("/meal-plans/<user_id>", methods=["GET"])
+def get_meal_plans(user_id):
     db = get_db()
     try:
         uid = ObjectId(user_id)
     except Exception:
-        return JSONResponse({"error": "Invalid user_id"}, status_code=400)
+        return jsonify({"error": "Invalid user_id"}), 400
+    plans = list(db.meal_plans.find({"user_id": uid}).sort("week_start", -1))
+    return jsonify([_serialize(p) for p in plans]), 200
 
-    plans = list(db.mealPlans.find({"userId": uid}).sort("weekStart", -1))
-    return [_serialize(p) for p in plans]
 
-
-@router.post("/meal-plans", status_code=201)
-async def create_meal_plan(request: Request):
-    db   = get_db()
-    data = await request.json()
-
-    required = ["userId", "weekStart", "days"]
-    missing  = [f for f in required if f not in data]
+@meal_plans_bp.route("/meal-plans", methods=["POST"])
+def create_meal_plan():
+    db = get_db()
+    data = request.get_json()
+    required = ["user_id", "week_start", "days"]
+    missing = [f for f in required if f not in data]
     if missing:
-        return JSONResponse({"error": f"Missing fields: {missing}"}, status_code=400)
-
+        return jsonify({"error": f"Missing fields: {missing}"}), 400
     try:
-        data["userId"] = ObjectId(data["userId"])
+        data["user_id"] = ObjectId(data["user_id"])
     except Exception:
-        return JSONResponse({"error": "Invalid userId"}, status_code=400)
-
+        return jsonify({"error": "Invalid user_id"}), 400
     if not isinstance(data["days"], list):
-        return JSONResponse({"error": "days must be an array"}, status_code=400)
-
-    for day in data["days"]:
-        try:
-            day["recipeId"] = ObjectId(day["recipeId"])
-        except Exception:
-            return JSONResponse({"error": "Invalid recipeId in days"}, status_code=400)
-
-    result = db.mealPlans.insert_one(data)
-    return JSONResponse({"inserted_id": str(result.inserted_id)}, status_code=201)
+        return jsonify({"error": "days must be an array"}), 400
+    result = db.meal_plans.insert_one(data)
+    return jsonify({"message": "Meal plan created", "meal_plan_id": str(result.inserted_id)}), 201
 
 
-@router.put("/meal-plans/{plan_id}")
-async def update_meal_plan(plan_id: str, request: Request):
+@meal_plans_bp.route("/meal-plans/<plan_id>", methods=["PUT"])
+def update_meal_plan(plan_id):
     db = get_db()
     try:
         oid = ObjectId(plan_id)
     except Exception:
-        return JSONResponse({"error": "Invalid plan_id"}, status_code=400)
-
-    data = await request.json()
-
-    if "userId" in data:
+        return jsonify({"error": "Invalid plan_id"}), 400
+    data = request.get_json()
+    if "user_id" in data:
         try:
-            data["userId"] = ObjectId(data["userId"])
+            data["user_id"] = ObjectId(data["user_id"])
         except Exception:
-            return JSONResponse({"error": "Invalid userId"}, status_code=400)
-
-    if "days" in data:
-        if not isinstance(data["days"], list):
-            return JSONResponse({"error": "days must be an array"}, status_code=400)
-        for day in data["days"]:
-            try:
-                day["recipeId"] = ObjectId(day["recipeId"])
-            except Exception:
-                return JSONResponse({"error": "Invalid recipeId in days"}, status_code=400)
-
-    result = db.mealPlans.update_one({"_id": oid}, {"$set": data})
+            return jsonify({"error": "Invalid user_id"}), 400
+    allowed = ["week_start", "days", "notes", "user_id"]
+    update_fields = {k: v for k, v in data.items() if k in allowed}
+    if not update_fields:
+        return jsonify({"error": "No valid fields to update"}), 400
+    result = db.meal_plans.update_one({"_id": oid}, {"$set": update_fields})
     if result.matched_count == 0:
-        return JSONResponse({"error": "Meal plan not found"}, status_code=404)
-    return {"modified": result.modified_count}
+        return jsonify({"error": "Meal plan not found"}), 404
+    return jsonify({"message": "Meal plan updated successfully", "modified": result.modified_count}), 200
 
 
-@router.delete("/meal-plans/{plan_id}")
-def delete_meal_plan(plan_id: str):
+@meal_plans_bp.route("/meal-plans/<plan_id>", methods=["DELETE"])
+def delete_meal_plan(plan_id):
     db = get_db()
     try:
         oid = ObjectId(plan_id)
     except Exception:
-        return JSONResponse({"error": "Invalid plan_id"}, status_code=400)
-
-    result = db.mealPlans.delete_one({"_id": oid})
+        return jsonify({"error": "Invalid plan_id"}), 400
+    result = db.meal_plans.delete_one({"_id": oid})
     if result.deleted_count == 0:
-        return JSONResponse({"error": "Meal plan not found"}, status_code=404)
-    return {"deleted": result.deleted_count}
+        return jsonify({"error": "Meal plan not found"}), 404
+    return jsonify({"message": "Meal plan deleted successfully"}), 200

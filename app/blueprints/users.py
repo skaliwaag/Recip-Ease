@@ -1,73 +1,79 @@
-# users.py — CRUD routes for user accounts (register, profile, preferences)
-from fastapi import APIRouter, Request
-from fastapi.responses import JSONResponse
+from flask import Blueprint, jsonify, request
 from app.db import get_db
 from bson import ObjectId
 from datetime import datetime, timezone
 
-router = APIRouter()
+users_bp = Blueprint("users", __name__)
 
 
-def _serialize(doc):
-    doc["_id"] = str(doc["_id"])
-    doc["favoriteCategories"] = [str(c) for c in doc.get("favoriteCategories", [])]
-    return doc
+def _serialize(user):
+    user["_id"] = str(user["_id"])
+    return user
 
 
-@router.get("/users")
-def user_list():
-    db    = get_db()
-    users = list(db.users.find({}, {"dietaryPreferences": 1, "name": 1, "email": 1, "createdAt": 1}).sort("name", 1))
-    return [_serialize(u) for u in users]
+@users_bp.route("/users", methods=["GET"])
+def get_all_users():
+    db = get_db()
+    users = list(db.users.find({}, {"name": 1, "email": 1, "dietary_preferences": 1, "created_at": 1}).sort("name", 1))
+    return jsonify([_serialize(u) for u in users]), 200
 
 
-@router.get("/users/{user_id}")
-def user_detail(user_id: str):
+@users_bp.route("/users/<user_id>", methods=["GET"])
+def get_user(user_id):
     db = get_db()
     try:
         oid = ObjectId(user_id)
     except Exception:
-        return JSONResponse({"error": "Invalid user_id"}, status_code=400)
-
+        return jsonify({"error": "Invalid user_id"}), 400
     user = db.users.find_one({"_id": oid})
     if not user:
-        return JSONResponse({"error": "User not found"}, status_code=404)
-
-    saved = list(db.savedRecipes.aggregate([
-        {"$match": {"userId": oid}},
-        {"$lookup": {"from": "recipes", "localField": "recipeId", "foreignField": "_id", "as": "recipe"}},
-        {"$unwind": "$recipe"},
-        {"$project": {"_id": {"$toString": "$recipe._id"}, "title": "$recipe.title", "submissionDateTime": 1}},
-    ]))
-
-    meal_plans = list(db.mealPlans.find({"userId": oid}).sort("weekStart", -1))
-    for plan in meal_plans:
-        plan["_id"]    = str(plan["_id"])
-        plan["userId"] = str(plan["userId"])
-        for day in plan.get("days", []):
-            day["recipeId"] = str(day["recipeId"])
-
-    user = _serialize(user)
-    user["savedRecipes"] = saved
-    user["mealPlans"]    = meal_plans
-    return user
+        return jsonify({"error": "User not found"}), 404
+    return jsonify(_serialize(user)), 200
 
 
-@router.post("/users", status_code=201)
-async def create_user(request: Request):
-    db   = get_db()
-    data = await request.json()
-
+@users_bp.route("/users", methods=["POST"])
+def create_user():
+    db = get_db()
+    data = request.get_json()
     required = ["name", "email"]
-    missing  = [f for f in required if f not in data]
+    missing = [f for f in required if f not in data]
     if missing:
-        return JSONResponse({"error": f"Missing fields: {missing}"}, status_code=400)
-
+        return jsonify({"error": f"Missing fields: {missing}"}), 400
     if db.users.find_one({"email": data["email"]}):
-        return JSONResponse({"error": "Email already registered"}, status_code=409)
-
-    data.setdefault("dietaryPreferences", [])
-    data.setdefault("favoriteCategories", [])
-    data["createdAt"] = datetime.now(timezone.utc)
+        return jsonify({"error": "Email already registered"}), 409
+    data.setdefault("dietary_preferences", [])
+    data.setdefault("favorite_categories", [])
+    data["created_at"] = datetime.now(timezone.utc)
     result = db.users.insert_one(data)
-    return JSONResponse({"inserted_id": str(result.inserted_id)}, status_code=201)
+    return jsonify({"message": "User created successfully", "user_id": str(result.inserted_id)}), 201
+
+
+@users_bp.route("/users/<user_id>", methods=["PUT"])
+def update_user(user_id):
+    db = get_db()
+    try:
+        oid = ObjectId(user_id)
+    except Exception:
+        return jsonify({"error": "Invalid user_id"}), 400
+    data = request.get_json()
+    allowed = ["name", "email", "dietary_preferences", "favorite_categories"]
+    update_fields = {k: v for k, v in data.items() if k in allowed}
+    if not update_fields:
+        return jsonify({"error": "No valid fields to update"}), 400
+    result = db.users.update_one({"_id": oid}, {"$set": update_fields})
+    if result.matched_count == 0:
+        return jsonify({"error": "User not found"}), 404
+    return jsonify({"message": "User updated successfully"}), 200
+
+
+@users_bp.route("/users/<user_id>", methods=["DELETE"])
+def delete_user(user_id):
+    db = get_db()
+    try:
+        oid = ObjectId(user_id)
+    except Exception:
+        return jsonify({"error": "Invalid user_id"}), 400
+    result = db.users.delete_one({"_id": oid})
+    if result.deleted_count == 0:
+        return jsonify({"error": "User not found"}), 404
+    return jsonify({"message": "User deleted successfully"}), 200
