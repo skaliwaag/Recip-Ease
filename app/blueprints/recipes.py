@@ -143,6 +143,7 @@ def update_recipe(recipe_id, title, description, categoryid, authoruserid, ingre
 def update_recipe_route(recipe_id):
     # Get the JSON data from the request
     data = request.get_json()
+    # Retrieve recipe fields from the JSON data
     title = data.get("title")
     description = data.get("description")
     categoryid = data.get("categoryid")
@@ -238,7 +239,7 @@ def delete_one_recipe(recipe_id: int):
     db = get_db()
     # Delete the recipe document by ID and return whether it was deleted
     result = db.recipes.delete_one({"_id": recipe_id})
-    # Return True if a document was deleted, False otherwise
+    # Return the count of deleted documents
     return result.deleted_count > 0
 
 #--------------------------------
@@ -246,7 +247,7 @@ def delete_one_recipe(recipe_id: int):
 #--------------------------------
 @recipes_bp.route("/recipes/<int:recipe_id>", methods=["DELETE"])
 def delete_one_recipe_route(recipe_id):
-    # If no ID exists, return 404 error
+    # Delete the recipe and get the result
     result = recipes_bp.delete_one_recipe(recipe_id)
     # If no documents were deleted, return 404 error
     if not result:
