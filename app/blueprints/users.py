@@ -109,7 +109,9 @@ def create_user_route():
 #     result = db.users.insert_many(user_docs)
 #     return result.inserted_ids
 
+#---------------------------------
 # UPDATE ONE user
+#---------------------------------
 def update_user(name, email, dietary_preferences, favorite_categories):
     # Build the user update
     update_fields = {}
@@ -129,16 +131,52 @@ def update_user(name, email, dietary_preferences, favorite_categories):
         {"name": name}, 
         {"$set": update_fields})
 
+#---------------------------------
+# Route for updating a user by name
+#---------------------------------
+@users_bp.route("/users/<name>", methods=["PUT"])
+def update_user_route(name):
+    # Get the JSON data from the request
+    data = request.get_json()
+    # Retrieve user fields from the JSON data
+    email = data.get("email")
+    dietary_preferences = data.get("dietary_preferences")
+    favorite_categories = data.get("favorite_categories")
+    # Update the user and get the result
+    result = users_bp.update_user(name, email, dietary_preferences, favorite_categories)
+    # If no fields were updated, return 400 error
+    if result is None:
+        return jsonify({"error": "No fields to update"}), 400
+    # If no documents were modified, return 404 error
+    if result.modified_count == 0:
+        return jsonify({"error": "User not found or no changes made"}), 404
+    # Return success message as JSON
+    return jsonify({"message": "User updated successfully"}), 200
+
 # UPDATE many users
 # do we even need this? not sure how we would use it, but maybe for batch updates? Why would we need to update many users at once?
 #def update_many_users(users):
 
+#--------------------------------
 # DELETE user
+#--------------------------------
 def delete_user(name: str):
     # Get the database connection
     db = get_db()
     # Delete the user document by name and return the result
     db.users.delete_one({"name": name})
+
+#--------------------------------
+# Route for deleting a user by name
+#--------------------------------
+@users_bp.route("/users/<name>", methods=["DELETE"])
+def delete_user_route(name):
+    # Delete the user and get the result
+    result = users_bp.delete_user(name)
+    # If no documents were deleted, return 404 error
+    if result.deleted_count == 0:
+        return jsonify({"error": "User not found"}), 404
+    return jsonify({"message": "User deleted successfully"}), 200
 
 # # DELETE all users
 # # Should I even include this? We can accidentally delete all users with one function...
