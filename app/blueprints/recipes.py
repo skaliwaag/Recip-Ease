@@ -8,7 +8,9 @@ recipes_bp = Blueprint("recipes", __name__)
 # READ/FIND ONE recipe by ID
 #-------------------------------------
 def read_one_recipe(recipe_id: int):
+    # Get the database connection
     db = get_db()
+    # Find and return the recipe document by _id
     return db.recipes.find_one({"_id": recipe_id})
 
 #-------------------------------------
@@ -244,7 +246,7 @@ def delete_one_recipe(recipe_id: int):
 #--------------------------------
 @recipes_bp.route("/recipes/<int:recipe_id>", methods=["DELETE"])
 def delete_one_recipe_route(recipe_id):
-    # Delete the recipe and get the result
+    # If no ID exists, return 404 error
     result = recipes_bp.delete_one_recipe(recipe_id)
     # If no documents were deleted, return 404 error
     if not result:
