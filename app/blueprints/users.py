@@ -122,8 +122,9 @@ def update_user(name, email, dietary_preferences, favorite_categories):
         update_fields["dietary_preferences"] = dietary_preferences
     if favorite_categories is not None:
         update_fields["favorite_categories"] = favorite_categories
+    # If no fields to update, return None
     if not update_fields:
-        return None  # No fields to update
+        return None  
     # Get the database connection
     db = get_db()
     # Update the user document by name and return the result
