@@ -94,18 +94,68 @@ def create_mealplan_route():
     return jsonify({"message": "Meal plan created", "mealplan_id": str(mealplan_id)}), 201
 
 #------------------------------
-# UPDATE meal plan
+# UPDATE ONE meal plan
 #------------------------------
-def update_mealplan(mealplan):
+def update_mealplan(mealplan_id, user_id, week_start, days, notes):
+    # Build the mealplan update
+    update_fields = {}
+    if user_id:
+        update_fields["user_id"] = user_id
+    if week_start:
+        update_fields["week_start"] = week_start
+    if days:
+        update_fields["days"] = days
+    if notes:
+        update_fields["notes"] = notes
+    # Get the database connection
     db = get_db()
-    db.execute('UPDATE mealplan SET userid = ?, weekstart = ?, days = ?, notes = ? WHERE id = ?',
-               (mealplan.userid, mealplan.weekstart, mealplan.days, mealplan.notes, mealplan.id))
-    db.commit()
+    # Update the mealplan document by ID and return whether it was successful
+    return db.mealplan.update_one(
+        {"_id": mealplan_id},
+        {"$set": update_fields})
+    
+#------------------------------
+# Route for updating a meal plan by ID
+#------------------------------
+@meal_plans_bp.route("/mealplans/<int:mealplan_id>", methods=["PUT"])
+def update_mealplan_route(mealplan_id):
+    # Get the JSON data from the request
+    data = request.get_json()
+    # Retrieve mealplans fields from the JSON data
+    week_start = data.get("week_start")
+    days = data.get("days")
+    notes = data.get("notes")
+    # Update the mealplan and get the result
+    result = meal_plans_bp.update_mealplan(mealplan_id, week_start, days, notes)
+    # If no fields to update, return 400 error
+    if result is None:
+        return jsonify({"error": "No fields to update"}), 400
+    # If mealplan not found, return 404 error
+    if not result:
+        return jsonify({"error": "Meal plan not found"}), 404
+    # Return success message as JSON
+    return jsonify({"message": "Meal plan updated successfully"}), 200
 
 #------------------------------
-# DELETE meal plan
+# DELETE ONE meal plan
 #------------------------------
 def delete_mealplan(mealplan_id: int):
+    # Get the database connection
     db = get_db()
-    db.execute('DELETE FROM mealplan WHERE id = ?', (mealplan_id,))
-    db.commit()
+    # Delete the mealplan document by ID and return whether it was deleted
+    result = db.mealplan.delete_one({"_id": mealplan_id})
+    # Return the number of documents deleted
+    return result.deleted_count
+
+#------------------------------
+# Route for deleting a meal plan by ID
+#------------------------------
+@meal_plans_bp.route("/mealplans/<int:mealplan_id>", methods=["DELETE"])
+def delete_mealplan_route(mealplan_id):
+    # Delete the mealplan and get the result
+    result = meal_plans_bp.delete_mealplan(mealplan_id)
+    # If no documents were deleted, return 404 error
+    if not result:
+        return jsonify({"error": "Meal plan not found"}), 404
+    # Return success message as JSON
+    return jsonify({"message": "Meal plan deleted successfully"}), 200
