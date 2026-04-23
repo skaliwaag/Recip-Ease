@@ -1,5 +1,3 @@
-# run.py — entry point; start the app with: uvicorn run:app --reload
-import uvicorn
 from dotenv import load_dotenv
 import os
 
@@ -10,4 +8,4 @@ from app import create_app
 app = create_app()
 
 if __name__ == "__main__":
-    uvicorn.run("run:app", host="0.0.0.0", port=8000, reload=True)
+    app.run(debug=True)
