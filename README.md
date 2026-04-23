@@ -19,5 +19,12 @@ Recipe Management Application and Ingredient Substitution Manager
 # .env.example
 4/21/26 Contains information on how to create your own .env file locally
 
-# users.py
-4/22/26 UPDATED
+# blueprints/users.py
+4/22/26 UPDATED, added routing
+
+# blueprints/ recipes.py
+4/22/26 UPDATED, added routing
+
+# reviews.py
+
+# meal_plans.py
