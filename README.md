@@ -1,6 +1,6 @@
 # Recip-Ease
 
-A recipe management web application built with Python FastAPI and MongoDB Atlas. Users can browse recipes, save favorites, write reviews, and plan weekly meals.
+A recipe management web application built with Python (Flask) and MongoDB Atlas. Users can browse recipes, save favorites, write reviews, plan weekly meals, and receive personalized recipe recommendations.
 
 ## Team
 
@@ -11,9 +11,9 @@ A recipe management web application built with Python FastAPI and MongoDB Atlas.
 
 ## Technology Stack
 
-- **Backend:** Python 3, FastAPI, Uvicorn
-- **Database:** MongoDB Atlas (PyMongo driver)
-- **Frontend:** HTML, CSS, Jinja2 templates
+- **Backend:** Python 3, Flask 3.1+
+- **Database:** MongoDB Atlas (PyMongo 4.8+ driver)
+- **Frontend:** Jinja2 server-side templates, Bootstrap 5.3
 - **Environment:** python-dotenv
 
 ## Project Structure
@@ -21,22 +21,30 @@ A recipe management web application built with Python FastAPI and MongoDB Atlas.
 ```
 recip-ease/
 ├── app/
-│   ├── __init__.py          # App factory — middleware and router registration
-│   ├── db.py                # MongoDB connection helper
-│   ├── static/              # CSS
-│   ├── templates/           # Jinja2 HTML templates
+│   ├── __init__.py              # App factory — blueprint registration
+│   ├── db.py                    # MongoDB connection helper
+│   ├── static/
+│   │   └── style.css            # Custom Bootstrap overrides
+│   ├── templates/               # Jinja2 HTML templates
+│   │   ├── base.html
+│   │   ├── index.html           # Recipe list with search/filter
+│   │   ├── recipe_detail.html
+│   │   ├── recipe_form.html
+│   │   └── dashboard.html
 │   └── blueprints/
-│       ├── views.py         # HTML routes: home, recipe CRUD, reviews, stats
-│       ├── dashboard.py     # JSON API — summary stats (Advanced Feature)
-│       ├── recommendations.py  # JSON API — recipe recommendations (Advanced Feature)
-│       ├── recipes.py       # Recipe JSON API — list, create, update, delete
-│       ├── users.py         # User routes — list, detail, create
-│       ├── reviews.py       # Review API — list, create, delete
-│       └── meal_plans.py    # Meal plan routes — list, create, update, delete
-├── run.py                   # Entry point (uvicorn)
-├── seed_db.py               # One-time script: populate database with sample data
-├── create_indexes.py        # One-time script: create Atlas indexes
-└── requirements.txt
+│       ├── views.py             # HTML routes: home, recipe CRUD, reviews, dashboard
+│       ├── recipes.py           # Recipe JSON API
+│       ├── users.py             # User JSON API
+│       ├── reviews.py           # Review JSON API
+│       ├── meal_plans.py        # Meal plan JSON API
+│       ├── recommendations.py   # Recommendation engine (Advanced Feature 1)
+│       └── dashboard.py         # Summary stats (Advanced Feature 2)
+├── run.py                       # Flask dev server entry point
+├── seed_db.py                   # One-time script: populate all 6 collections
+├── create_indexes.py            # One-time script: create Atlas indexes
+├── requirements.txt
+├── .env.example                 # Environment variable template
+└── TESTING.md                   # Manual testing guide
 ```
 
 ## Setup Instructions
@@ -71,7 +79,7 @@ cp .env.example .env
 ```
 
 ```
-MONGO_URI=mongodb+srv://<username>:<password>@<cluster>.mongodb.net/recip_ease?retryWrites=true&w=majority
+MONGO_URI=mongodb+srv://<username>:<password>@<cluster>.mongodb.net/Recipe-Ease?retryWrites=true&w=majority
 ```
 
 Do not commit `.env` — it is listed in `.gitignore`.
@@ -82,9 +90,8 @@ Do not commit `.env` — it is listed in `.gitignore`.
 python seed_db.py
 ```
 
-Inserts sample data into all 6 collections: users, categories, recipes, reviews, savedRecipes, mealPlans.
+Inserts sample data into all 6 collections. Expected output:
 
-Expected output:
 ```
 Seeded 7 categories
 Seeded 51 users
@@ -101,7 +108,12 @@ Seed complete!
 python create_indexes.py
 ```
 
-Creates all required indexes (text search on recipes, dietary flag filter, review lookup, saved recipe uniqueness, user email uniqueness).
+Creates 5 indexes:
+- Full-text search on recipe `title`, `description`, and `tags`
+- Ascending index on recipe `dietary_flags` for filter queries
+- Ascending index on `reviews.recipe_id` for fast review lookups
+- Compound unique index on `saved_recipes (user_id, recipe_id)` to prevent duplicates
+- Unique index on `users.email`
 
 ### 7. Run the application
 
@@ -113,61 +125,101 @@ The app will be available at `http://127.0.0.1:8000`.
 
 ## Routes
 
-### HTML (views.py)
+### HTML (Browser UI)
 
 | Method | Route | Description |
 |--------|-------|-------------|
 | GET | `/` | Home — browse and search recipes |
 | GET | `/recipe/new` | New recipe form |
 | POST | `/recipe/new` | Submit new recipe |
-| GET | `/recipe/{id}` | Recipe detail with category, author, reviews, avg rating |
-| POST | `/recipe/{id}/delete` | Delete a recipe |
-| POST | `/recipe/{id}/review` | Submit a review (rating 1–5) |
-| POST | `/review/{id}/delete` | Delete a review |
-| GET | `/stats` | Stats page — recipes per category, top rated, most saved |
+| GET | `/recipe/<id>` | Recipe detail: ingredients, author, reviews, avg rating |
+| POST | `/recipe/<id>/delete` | Delete a recipe |
+| POST | `/recipe/<id>/review` | Submit a review (rating 1–5) |
+| POST | `/review/<id>/delete` | Delete a review |
+| GET | `/dashboard` | Dashboard: recipes per category, top-rated, most saved |
 
 ### JSON API
 
+#### Recipes
+
 | Method | Route | Description |
 |--------|-------|-------------|
-| GET | `/recipes` | List all recipes. Supports `?q=`, `?flag=`, `?category=` |
-| GET | `/recipes/{id}` | Recipe detail with category, author, reviews, avg rating |
+| GET | `/recipes` | List all recipes. Query params: `?q=`, `?flag=`, `?category=` |
+| GET | `/recipes/<id>` | Recipe detail with category, author, avg rating |
 | POST | `/recipes` | Create a recipe |
-| PUT | `/recipes/{id}` | Update a recipe |
-| DELETE | `/recipes/{id}` | Delete a recipe |
+| PUT | `/recipes/<id>` | Update a recipe |
+| DELETE | `/recipes/<id>` | Delete a recipe |
+
+#### Users
+
+| Method | Route | Description |
+|--------|-------|-------------|
 | GET | `/users` | List all users |
-| GET | `/users/{id}` | User detail with saved recipes and meal plans |
+| GET | `/users/<id>` | User detail |
 | POST | `/users` | Create a user |
-| GET | `/reviews/{recipe_id}` | All reviews for a recipe |
+| PUT | `/users/<id>` | Update a user |
+| DELETE | `/users/<id>` | Delete a user |
+
+#### Reviews
+
+| Method | Route | Description |
+|--------|-------|-------------|
+| GET | `/reviews` | List all reviews (sorted by date, newest first) |
+| GET | `/reviews/<recipe_id>` | All reviews for a specific recipe |
 | POST | `/reviews` | Submit a review (rating 1–5 required) |
-| DELETE | `/reviews/{id}` | Delete a review |
-| GET | `/meal-plans/{user_id}` | All meal plans for a user |
+| PUT | `/reviews/<id>` | Update a review (rating and/or comment) |
+| DELETE | `/reviews/<id>` | Delete a review |
+
+#### Meal Plans
+
+| Method | Route | Description |
+|--------|-------|-------------|
+| GET | `/meal-plans/<user_id>` | All meal plans for a user (sorted by week, newest first) |
 | POST | `/meal-plans` | Create a meal plan |
-| PUT | `/meal-plans/{id}` | Update a meal plan |
-| DELETE | `/meal-plans/{id}` | Delete a meal plan |
-| GET | `/recommendations/{user_id}` | Top 3 recipes matching user's dietary prefs and favorite categories |
-| GET | `/dashboard` | Summary stats: recipes per category, top-rated, most saved |
+| PUT | `/meal-plans/<id>` | Update a meal plan |
+| DELETE | `/meal-plans/<id>` | Delete a meal plan |
+
+#### Advanced Endpoints
+
+| Method | Route | Description |
+|--------|-------|-------------|
+| GET | `/recommendations/<user_id>` | Top 3 recipes matching user's dietary preferences and favorite categories |
+| GET | `/dashboard` | Summary stats: recipes per category, top-rated (5), most saved (5) |
 
 ## Advanced Features
 
 ### 1. Recommendation Engine (`GET /recommendations/<user_id>`)
-Matches recipes against the user's `dietaryPreferences` and `favoriteCategories`. Joins review data, computes average rating, and returns the top 3 highest-rated matches. Uses a multi-stage aggregation pipeline with `$match`, `$lookup`, `$addFields`, `$sort`, and `$limit`.
 
-### 2. Dashboard (`GET /dashboard` and `/stats`)
-Returns three summary statistics:
-- **Recipes per category** — count of recipes grouped by category name
-- **Top-rated recipes** — top 5 by average review rating
-- **Most saved recipes** — top 5 by save count
+Fetches the user's `dietary_preferences` and `favorite_categories`, then runs a multi-stage aggregation pipeline to find recipes that match both. Joins review data via `$lookup`, computes average rating with `$addFields`, sorts by rating descending, and returns the top 3 results. Stages used: `$match`, `$lookup`, `$addFields`, `$sort`, `$limit`.
 
-Each statistic uses a separate aggregation pipeline with `$group`, `$lookup`, `$addFields`, and `$sort`.
+### 2. Dashboard (`GET /dashboard`)
 
-## MongoDB Design Highlights
+Returns three aggregated statistics, each from its own pipeline:
 
-- **Embedded documents:** `ingredients` array within recipes; `days` array within meal plans
-- **Referenced relationships:** recipes reference `categoryId` and `authorUserId`; reviews reference `userId` and `recipeId`
-- **Indexes:** text search index on recipe title/description/tags; compound unique index on savedRecipes; unique index on user email
-- **Aggregation:** used in recipe detail, recommendations, and dashboard endpoints
+- **Recipes per category** — `$group` by category, `$lookup` to resolve category name, sorted by count
+- **Top-rated recipes** — `$lookup` reviews, `$addFields` avg rating, top 5 by rating
+- **Most saved recipes** — `$group` by recipe, `$lookup` recipe title, top 5 by save count
+
+## Database Design
+
+### Collections
+
+| Collection | Documents | Purpose |
+|------------|-----------|---------|
+| `users` | 51 | Accounts with dietary preferences and favorite categories |
+| `categories` | 7 | Breakfast, Lunch, Dinner, Dessert, Snack, Appetizer, Comfort |
+| `recipes` | 27 | Full recipe data with embedded ingredients array |
+| `reviews` | 30 | Ratings (1–5) and comments, referenced to recipe and user |
+| `saved_recipes` | 30 | User–recipe bookmarks (join collection) |
+| `meal_plans` | 27 | Weekly plans with embedded days array per user |
+
+### Design Highlights
+
+- **Embedded documents:** `ingredients` array inside each recipe; `days` array inside each meal plan
+- **Referenced relationships:** recipes reference `category_id` and `author_user_id`; reviews reference `user_id` and `recipe_id`
+- **Indexes:** text search on recipe title/description/tags; dietary flag filter index; compound unique index on saved recipes; unique index on user email
+- **Aggregation pipelines:** used in recipe detail, recommendations, and all dashboard statistics
 
 ## AI Assistance Disclosure
 
-Claude Code (Anthropic) was used to assist with code generation during development. All team members understand and can explain the database design, collection structure, queries, and application logic.
+A Claude/Anthropic AI agent was used for project planning, codebase scaffolding, rubric compliance checks, and troubleshooting, as well as document formatting assistance. All team members understand and can explain the database design, collection structure, queries, and application logic.
