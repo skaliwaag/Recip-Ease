@@ -1,10 +1,8 @@
-# recommendations.py — returns top 3 recipes matching a user's dietary prefs and favorite categories
-from fastapi import APIRouter
-from fastapi.responses import JSONResponse
+from flask import Blueprint, jsonify
 from app.db import get_db
 from bson import ObjectId
 
-router = APIRouter()
+recommendations_bp = Blueprint("recommendations", __name__)
 
 
 def _serialize(doc):
@@ -20,17 +18,17 @@ def _serialize(doc):
     return doc
 
 
-@router.get("/recommendations/{user_id}")
-def get_recommendations(user_id: str):
+@recommendations_bp.route("/recommendations/<user_id>")
+def get_recommendations(user_id):
     db = get_db()
 
     try:
         user = db.users.find_one({"_id": ObjectId(user_id)})
     except Exception:
-        return JSONResponse({"error": "Invalid user_id"}, status_code=400)
+        return jsonify({"error": "Invalid user_id"}), 400
 
     if not user:
-        return JSONResponse({"error": "User not found"}, status_code=404)
+        return jsonify({"error": "User not found"}), 404
 
     dietary_prefs  = user.get("dietaryPreferences", [])
     fav_categories = user.get("favoriteCategories", [])
@@ -41,7 +39,6 @@ def get_recommendations(user_id: str):
     if fav_categories:
         conditions.append({"categoryId": {"$in": fav_categories}})
 
-    # $or matches recipes that fit any of the user's preferences; empty filter returns all
     match_filter = {"$or": conditions} if conditions else {}
 
     pipeline = [
@@ -53,4 +50,4 @@ def get_recommendations(user_id: str):
     ]
 
     results = list(db.recipes.aggregate(pipeline))
-    return [_serialize(r) for r in results]
+    return jsonify([_serialize(r) for r in results])

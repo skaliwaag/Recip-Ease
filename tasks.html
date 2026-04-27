@@ -396,10 +396,10 @@ let taskState = {};
 <div class="progress-bar-wrap">
   <div class="progress-header">
     <span class="progress-label">Overall progress</span>
-    <span class="progress-count" id="prog-count">33 / 105 tasks done</span>
+    <span class="progress-count" id="prog-count">59 / 106 tasks done</span>
   </div>
   <div class="progress-track">
-    <div class="progress-fill" id="prog-fill" style="width: 31%;"></div>
+    <div class="progress-fill" id="prog-fill" style="width: 56%;"></div>
   </div>
 </div>
 
@@ -973,6 +973,7 @@ const WEEKS = [
       { id:"w4-t2", member:"terysa", text:"Write Section 2.6: savedRecipes collection (field table + sample doc)" },
       { id:"w4-t3", member:"terysa", text:"Write Section 5: validation considerations" },
       { id:"w4-t4", member:"terysa", text:"Build /recommendations page UI — recipe cards with match reasons" },
+      { id:"w4-t5", member:"terysa", text:"Fix Flask CRUD routes — blueprint call pattern + SQLite→MongoDB for reviews/meal_plans (branch: terysa/week4-flask-crud)" },
       { id:"w4-r1", member:"terry",  text:"Write Section 2.1: recipes collection" },
       { id:"w4-r2", member:"terry",  text:"Write Section 2.2: users collection" },
       { id:"w4-r3", member:"terry",  text:"Write Section 2.3: categories collection" },
@@ -1053,13 +1054,13 @@ function buildChecklist() {
         <div class="week-dates">${week.dates}</div>
       </div>
       <div class="week-stats" id="stats-${week.num}"></div>
-      <div class="week-toggle ${wi === 0 ? 'open' : ''}" id="tog-${week.num}">▾</div>
+      <div class="week-toggle ${wi === 3 ? 'open' : ''}" id="tog-${week.num}">▾</div>
     `;
     header.addEventListener("click", () => toggleWeek(week.num));
     div.appendChild(header);
 
     const body = document.createElement("div");
-    body.className = `week-body ${wi === 0 ? 'open' : ''}`;
+    body.className = `week-body ${wi === 3 ? 'open' : ''}`;
     body.id = `body-${week.num}`;
 
     week.tasks.forEach(task => {

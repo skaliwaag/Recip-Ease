@@ -1,13 +1,11 @@
-# dashboard.py — JSON API for stats data (recipes per category, top rated, most saved)
-# The HTML stats page lives in views.py /stats
-from fastapi import APIRouter
+from flask import Blueprint, render_template
 from app.db import get_db
 
-router = APIRouter()
+dashboard_bp = Blueprint("dashboard", __name__)
 
 
-@router.get("/dashboard")
-def get_dashboard():
+@dashboard_bp.route("/dashboard")
+def dashboard():
     db = get_db()
 
     recipes_per_category = list(db.recipes.aggregate([
@@ -16,6 +14,8 @@ def get_dashboard():
         {"$group": {"_id": "$categoryId", "name": {"$first": "$category.name"}, "count": {"$sum": 1}}},
         {"$sort": {"count": -1}},
     ]))
+    for d in recipes_per_category:
+        d["_id"] = str(d["_id"])
 
     top_rated = list(db.recipes.aggregate([
         {"$lookup": {"from": "reviews", "localField": "_id", "foreignField": "recipeId", "as": "reviews"}},
@@ -25,6 +25,8 @@ def get_dashboard():
         {"$sort": {"avgRating": -1}},
         {"$limit": 5},
     ]))
+    for d in top_rated:
+        d["_id"] = str(d["_id"])
 
     most_saved = list(db.savedRecipes.aggregate([
         {"$group": {"_id": "$recipeId", "saveCount": {"$sum": 1}}},
@@ -35,12 +37,8 @@ def get_dashboard():
         {"$limit": 5},
     ]))
 
-    def str_id(doc):
-        doc["_id"] = str(doc["_id"])
-        return doc
-
-    return {
-        "recipesPerCategory": [str_id(d) for d in recipes_per_category],
-        "topRated":           [str_id(d) for d in top_rated],
-        "mostSaved":          most_saved,
-    }
+    return render_template("dashboard.html",
+        recipes_per_category=recipes_per_category,
+        top_rated=top_rated,
+        most_saved=most_saved,
+    )
