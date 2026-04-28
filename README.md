@@ -56,72 +56,21 @@ git clone <repo-url>
 cd recip-ease
 ```
 
-### 2. Create a virtual environment
+### 2. Run the setup script
 
-```bash
-python -m venv venv
-venv\Scripts\activate        # Windows
-source venv/bin/activate     # Mac/Linux
+```powershell
+.\start.bat
 ```
 
-### 3. Install dependencies
+On first run this will:
+- Create a virtual environment and install dependencies
+- Open `.env` in Notepad — paste in the shared Atlas `MONGO_URI`, save, and close
+- Seed all 6 collections and create Atlas indexes
+- Launch the app at `http://127.0.0.1:5000`
 
-```bash
-pip install -r requirements.txt
-```
-
-### 4. Configure environment variables
-
-Copy `.env.example` to `.env` and fill in the shared Atlas credentials:
-
-```bash
-cp .env.example .env
-```
-
-```
-MONGO_URI=mongodb+srv://<username>:<password>@<cluster>.mongodb.net/Recipe-Ease?retryWrites=true&w=majority
-```
+On subsequent runs it skips straight to seed → indexes → launch.
 
 Do not commit `.env` — it is listed in `.gitignore`.
-
-### 5. Seed the database
-
-```bash
-python seed_db.py
-```
-
-Inserts sample data into all 6 collections. Expected output:
-
-```
-Seeded 7 categories
-Seeded 51 users
-Seeded 27 recipes
-Seeded 30 reviews
-Seeded 30 savedRecipes
-Seeded 27 mealPlans
-Seed complete!
-```
-
-### 6. Create Atlas indexes
-
-```bash
-python create_indexes.py
-```
-
-Creates 5 indexes:
-- Full-text search on recipe `title`, `description`, and `tags`
-- Ascending index on recipe `dietary_flags` for filter queries
-- Ascending index on `reviews.recipe_id` for fast review lookups
-- Compound unique index on `saved_recipes (user_id, recipe_id)` to prevent duplicates
-- Unique index on `users.email`
-
-### 7. Run the application
-
-```bash
-python run.py
-```
-
-The app will be available at `http://127.0.0.1:8000`.
 
 ## Routes
 
