@@ -33,12 +33,15 @@ def get_recommendations(user_id):
     dietary_prefs  = user.get("dietaryPreferences", [])
     fav_categories = user.get("favoriteCategories", [])
 
+    # Only add a condition when the preference list is non-empty — {"$in": []} matches nothing.
     conditions = []
     if dietary_prefs:
         conditions.append({"dietaryFlags": {"$in": dietary_prefs}})
     if fav_categories:
         conditions.append({"categoryId": {"$in": fav_categories}})
 
+    # $or with an empty list is a MongoDB error; fall back to {} (match all) so new users
+    # with no stored preferences still get results instead of an empty response.
     match_filter = {"$or": conditions} if conditions else {}
 
     pipeline = [

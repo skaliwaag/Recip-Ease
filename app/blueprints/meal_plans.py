@@ -50,6 +50,7 @@ def create_meal_plan():
         data["user_id"] = ObjectId(data["user_id"])
     except Exception:
         return jsonify({"error": "Invalid user_id"}), 400
+    # MongoDB would silently store any type for "days"; routes iterate over it, so enforce list here.
     if not isinstance(data["days"], list):
         return jsonify({"error": "days must be an array"}), 400
     # Create the meal plan and get the new mealplan ID
@@ -77,6 +78,7 @@ def update_meal_plan(plan_id):
         except Exception:
             return jsonify({"error": "Invalid user_id"}), 400
     # Build the mealplan update
+    # Allowlist prevents _id or other internal fields from being overwritten via PUT.
     allowed = ["week_start", "days", "notes", "user_id"]
     # ensures that only fields with values are updated
     update_fields = {k: v for k, v in data.items() if k in allowed}

@@ -21,6 +21,7 @@ def get_all_users():
     # Get the database connection
     db = get_db()
     # Get all user documents
+    # Projection limits the response to fields the list view needs — avoids sending large embedded arrays.
     users = list(db.users.find({}, {"name": 1, "email": 1, "dietary_preferences": 1, "created_at": 1}).sort("name", 1))
     # Return the list of users as JSON
     return jsonify([_serialize(u) for u in users]), 200
@@ -65,6 +66,7 @@ def create_user():
     data.setdefault("dietary_preferences", [])
     data.setdefault("favorite_categories", [])
     # Set created_at to current time if not provided
+    # Server-side so clients can't forge their registration timestamp.
     data["created_at"] = datetime.now(timezone.utc)
     # Create the user and get the inserted ID
     result = db.users.insert_one(data)
@@ -86,6 +88,7 @@ def update_user(user_id):
     # Get the JSON data from the request
     data = request.get_json()
     # Build the user update
+    # Allowlist prevents a PUT request from overwriting _id or created_at.
     allowed = ["name", "email", "dietary_preferences", "favorite_categories"]
     # ensures that only fields with values are updated
     update_fields = {k: v for k, v in data.items() if k in allowed}

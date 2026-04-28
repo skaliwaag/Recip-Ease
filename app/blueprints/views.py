@@ -3,6 +3,8 @@ from app.db import get_db
 from bson import ObjectId
 from datetime import datetime, timezone
 
+# These must exactly match the dietaryFlags values stored in MongoDB —
+# changing them without a data migration will silently break dietary filtering.
 DIETARY_FLAGS = ["vegan", "vegetarian", "gluten-free", "dairy-free", "nut-free"]
 
 
@@ -17,6 +19,7 @@ def register_routes(app):
 
         query = {}
         if q:
+            # $text requires a text index on the recipes collection — returns no results if the index doesn't exist.
             query["$text"] = {"$search": q}
         if flag:
             query["dietaryFlags"] = flag
@@ -74,6 +77,7 @@ def register_routes(app):
             "description": request.form["description"],
             "categoryId":  category_oid,
             "authorUserId": author_oid,
+            # Textarea submits one ingredient per line; wrap each in a dict to match the seed schema.
             "ingredients": [{"name": i.strip()} for i in request.form.get("ingredients", "").split("\n") if i.strip()],
             "prepTime":    int(request.form.get("prepTime", 0)),
             "cookTime":    int(request.form.get("cookTime", 0)),
@@ -132,7 +136,7 @@ def register_routes(app):
         try:
             db.recipes.delete_one({"_id": ObjectId(recipe_id)})
         except Exception:
-            pass
+            pass  # Bad or missing IDs shouldn't crash the UI — just redirect to index.
         return redirect(url_for("index"))
 
 

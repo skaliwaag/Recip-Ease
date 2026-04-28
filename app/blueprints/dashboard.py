@@ -10,6 +10,8 @@ def dashboard():
 
     recipes_per_category = list(db.recipes.aggregate([
         {"$lookup": {"from": "categories", "localField": "categoryId", "foreignField": "_id", "as": "category"}},
+        # preserveNullAndEmptyArrays keeps recipes with no matching category in the count —
+        # without it, $unwind drops those documents entirely.
         {"$unwind": {"path": "$category", "preserveNullAndEmptyArrays": True}},
         {"$group": {"_id": "$categoryId", "name": {"$first": "$category.name"}, "count": {"$sum": 1}}},
         {"$sort": {"count": -1}},
@@ -19,6 +21,8 @@ def dashboard():
 
     top_rated = list(db.recipes.aggregate([
         {"$lookup": {"from": "reviews", "localField": "_id", "foreignField": "recipeId", "as": "reviews"}},
+        # Require at least one review before averaging — $avg of an empty array returns null,
+        # which would sort unrated recipes to unpredictable positions.
         {"$match": {"reviews.0": {"$exists": True}}},
         {"$addFields": {"avgRating": {"$avg": "$reviews.rating"}, "reviewCount": {"$size": "$reviews"}}},
         {"$project": {"title": 1, "avgRating": 1, "reviewCount": 1}},

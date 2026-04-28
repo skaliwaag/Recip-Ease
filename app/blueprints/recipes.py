@@ -69,6 +69,7 @@ def create_recipe():
         data["author_user_id"] = ObjectId(data["author_user_id"])
     except Exception:
         return jsonify({"error": "Invalid category_id or author_user_id"}), 400
+    # Default empty arrays so $in queries on these fields still match tagless/unflagged recipes.
     data.setdefault("tags", [])
     data.setdefault("dietary_flags", [])
     # Create the recipe and get the new recipe ID

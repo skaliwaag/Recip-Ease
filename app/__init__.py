@@ -4,8 +4,11 @@ import os
 
 def create_app():
     app = Flask(__name__)
+    # Fallback dev key keeps Flask sessions working without a .env file locally.
     app.secret_key = os.getenv("SECRET_KEY", "recip-ease-dev-key")
 
+    # Imports inside create_app to avoid circular imports — blueprints import from app.db,
+    # which would create a cycle if these were at module level.
     from app.blueprints.recipes import recipes_bp
     from app.blueprints.users import users_bp
     from app.blueprints.meal_plans import meal_plans_bp

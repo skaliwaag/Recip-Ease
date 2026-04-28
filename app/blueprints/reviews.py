@@ -66,9 +66,11 @@ def create_review():
         data["recipe_id"] = ObjectId(data["recipe_id"])
     except Exception:
         return jsonify({"error": "Invalid user_id or recipe_id"}), 400
+    # isinstance also rejects floats like 4.5 — a plain range check would pass them.
     if not isinstance(data["rating"], int) or not 1 <= data["rating"] <= 5:
         return jsonify({"error": "rating must be an integer 1-5"}), 400
     data.setdefault("comment", "")
+    # Server-side timestamp so clients can't forge when a review was written.
     data["created_at"] = datetime.now(timezone.utc)
     # Create the review and get the inserted ID
     result = db.reviews.insert_one(data)
