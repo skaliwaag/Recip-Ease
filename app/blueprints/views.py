@@ -3,8 +3,8 @@ from app.db import get_db
 from bson import ObjectId
 from datetime import datetime, timezone
 
-# These must exactly match the dietaryFlags values stored in MongoDB —
-# changing them without a data migration will silently break dietary filtering.
+# these have to match exactly what's stored in mongo — changing them here without
+# updating the db too will silently break the dietary filter
 DIETARY_FLAGS = ["vegan", "vegetarian", "gluten-free", "dairy-free", "nut-free"]
 
 
@@ -19,7 +19,7 @@ def register_routes(app):
 
         query = {}
         if q:
-            # $text requires a text index on the recipes collection — returns no results if the index doesn't exist.
+            # $text only works if the text index exists in Atlas — run create_indexes.py first
             query["$text"] = {"$search": q}
         if flag:
             query["dietaryFlags"] = flag
@@ -77,7 +77,7 @@ def register_routes(app):
             "description": request.form["description"],
             "categoryId":  category_oid,
             "authorUserId": author_oid,
-            # Textarea submits one ingredient per line; wrap each in a dict to match the seed schema.
+            # form sends one ingredient per line, wrapping in dicts to match how the seed stores them
             "ingredients": [{"name": i.strip()} for i in request.form.get("ingredients", "").split("\n") if i.strip()],
             "prepTime":    int(request.form.get("prepTime", 0)),
             "cookTime":    int(request.form.get("cookTime", 0)),
@@ -136,7 +136,7 @@ def register_routes(app):
         try:
             db.recipes.delete_one({"_id": ObjectId(recipe_id)})
         except Exception:
-            pass  # Bad or missing IDs shouldn't crash the UI — just redirect to index.
+            pass  # bad id shouldn't crash the page, just go back to home
         return redirect(url_for("index"))
 
 
