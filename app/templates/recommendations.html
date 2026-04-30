@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+{% from "macros.html" import stars %}
+{% block title %}For You — Recip-Ease{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h2>For You</h2>
+</div>
+
+<form method="GET" action="{{ url_for('recommendations') }}" class="row g-2 mb-4">
+  <div class="col-md-5">
+    <select name="user_id" class="form-select" onchange="this.form.submit()">
+      <option value="">Select a user...</option>
+      {% for u in users %}
+        <option value="{{ u._id }}" {% if u._id == user_id %}selected{% endif %}>{{ u.name }}</option>
+      {% endfor %}
+    </select>
+  </div>
+</form>
+
+{% if selected_user %}
+  <p class="text-muted small mb-3">
+    Showing top recommendations for <strong>{{ selected_user.name }}</strong>
+    based on their dietary preferences and favorite categories.
+  </p>
+
+  {% if results %}
+    <div class="row row-cols-1 row-cols-md-3 g-3">
+      {% for recipe in results %}
+      <div class="col">
+        <div class="card h-100 card-accent">
+          <div class="card-body">
+            <h5 class="card-title">
+              <a href="{{ url_for('recipe_detail', recipe_id=recipe._id) }}" class="text-decoration-none">
+                {{ recipe.title }}
+              </a>
+            </h5>
+            <p class="card-text text-muted small">{{ recipe.description[:100] }}{% if recipe.description|length > 100 %}…{% endif %}</p>
+            <div class="mt-2">
+              {% for f in recipe.get('dietaryFlags', []) %}
+                <span class="badge badge-dietary me-1">{{ f }}</span>
+              {% endfor %}
+              {% for tag in recipe.get('tags', []) %}
+                <span class="badge bg-light text-dark border me-1">{{ tag }}</span>
+              {% endfor %}
+            </div>
+          </div>
+          <div class="card-footer small d-flex justify-content-between align-items-center" style="color: var(--re-taupe);">
+            <span>
+              <i class="bi bi-clock"></i> {{ recipe.prepTime }}m prep
+              &nbsp;·&nbsp;
+              <i class="bi bi-fire"></i> {{ recipe.cookTime }}m cook
+            </span>
+            {% if recipe.avgRating %}
+              <span>{{ stars(recipe.avgRating, 'rating-sm') }}</span>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+
+  {% else %}
+    <div class="empty-state">
+      <div class="empty-icon">🍽️</div>
+      <div class="empty-title">No matches found.</div>
+      <p class="small">This user has no dietary preferences or favorite categories set.</p>
+    </div>
+  {% endif %}
+
+{% else %}
+  <div class="empty-state">
+    <div class="empty-icon">👤</div>
+    <div class="empty-title">Select a user to see their recommendations.</div>
+  </div>
+{% endif %}
+
+{% endblock %}

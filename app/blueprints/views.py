@@ -165,6 +165,53 @@ def register_routes(app):
         return redirect(url_for("recipe_detail", recipe_id=recipe_id))
 
 
+    @app.route("/recommendations")
+    def recommendations():
+        db = get_db()
+        users = list(db.users.find({}, {"name": 1}).sort("name", 1))
+        for u in users:
+            u["_id"] = str(u["_id"])
+
+        user_id = request.args.get("user_id", "").strip()
+        selected_user = None
+        results = []
+
+        if user_id:
+            try:
+                user = db.users.find_one({"_id": ObjectId(user_id)})
+            except Exception:
+                user = None
+
+            if user:
+                selected_user = {"_id": user_id, "name": user["name"]}
+                dietary_prefs  = user.get("dietaryPreferences", [])
+                fav_categories = user.get("favoriteCategories", [])
+
+                conditions = []
+                if dietary_prefs:
+                    conditions.append({"dietaryFlags": {"$in": dietary_prefs}})
+                if fav_categories:
+                    conditions.append({"categoryId": {"$in": fav_categories}})
+                match_filter = {"$or": conditions} if conditions else {}
+
+                pipeline = [
+                    {"$match": match_filter},
+                    {"$lookup": {"from": "reviews", "localField": "_id", "foreignField": "recipeId", "as": "reviews"}},
+                    {"$addFields": {"avgRating": {"$avg": "$reviews.rating"}, "reviewCount": {"$size": "$reviews"}}},
+                    {"$sort": {"avgRating": -1}},
+                    {"$limit": 3},
+                ]
+                results = list(db.recipes.aggregate(pipeline))
+                for r in results:
+                    r["_id"] = str(r["_id"])
+
+        return render_template("recommendations.html",
+            users=users,
+            selected_user=selected_user,
+            results=results,
+            user_id=user_id)
+
+
     @app.route("/review/<review_id>/delete", methods=["POST"])
     def review_delete(review_id):
         recipe_id = request.form.get("recipe_id", "")
