@@ -5,6 +5,39 @@ echo.
 echo === Recip-Ease Setup ===
 echo.
 
+:: 0. Ensure Python is available
+python --version >nul 2>&1
+if errorlevel 1 (
+    echo [0/5] Python not found.
+    winget --version >nul 2>&1
+    if errorlevel 1 (
+        echo.
+        echo   winget is not available on this machine.
+        echo   Install Python 3 manually from https://www.python.org/downloads/
+        echo   then run start.bat again.
+        echo.
+        pause
+        exit /b 1
+    )
+    echo [0/5] Installing Python via winget...
+    winget install Python.Python.3 --silent --accept-package-agreements --accept-source-agreements
+    if errorlevel 1 (
+        echo.
+        echo   Python installation failed.
+        echo   Install Python 3 manually from https://www.python.org/downloads/
+        echo   then run start.bat again.
+        echo.
+        pause
+        exit /b 1
+    )
+    echo.
+    echo   Python installed. Please close this window and run start.bat again
+    echo   so the new Python path takes effect.
+    echo.
+    pause
+    exit /b 0
+)
+
 :: 1. Virtual environment
 if not exist "venv\" (
     echo [1/5] Creating virtual environment...
