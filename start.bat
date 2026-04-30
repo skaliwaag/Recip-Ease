@@ -15,6 +15,7 @@ if not exist "venv\" (
 
 :: 2. Dependencies
 echo [2/5] Installing dependencies...
+venv\Scripts\pip install --upgrade pip -q
 venv\Scripts\pip install -r requirements.txt -q
 
 :: 3. .env
@@ -40,6 +41,11 @@ venv\Scripts\python create_indexes.py
 
 echo.
 echo === Setup complete. Starting app ===
-echo     Open http://127.0.0.1:5000 in your browser.
 echo.
+echo   Opening http://127.0.0.1:5000 in 5 seconds. Press ESC to cancel.
+echo.
+
+powershell -NoProfile -Command "$c=$false;for($i=5;$i-ge1;$i--){Write-Host -NoNewline \"`r  $i...  \";$sw=[Diagnostics.Stopwatch]::StartNew();while($sw.Elapsed.TotalSeconds-lt 1){if([Console]::KeyAvailable){$k=[Console]::ReadKey($true);if($k.Key-eq 'Escape'){$c=$true;break}}};if($c){break}};if($c){Write-Host \"`r  Browser launch cancelled.     \";exit 1}else{Write-Host ''}"
+if not errorlevel 1 start "" http://127.0.0.1:5000
+
 venv\Scripts\python run.py
