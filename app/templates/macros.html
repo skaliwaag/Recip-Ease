@@ -1,0 +1,17 @@
+{# macros.html — shared Jinja2 helpers imported by any template that needs them #}
+
+{# stars(n, cls)
+   Renders 5 Unicode star characters (★) styled filled/empty based on n.
+   Uses CSS classes rather than separate characters so color is controlled
+   entirely in style.css without touching this macro.
+   n     — numeric rating (0–5, may be null/None)
+   cls   — optional extra class on the wrapper span (e.g. 'rating-sm')
+#}
+{% macro stars(n, cls='') %}
+{% set full = (n | round(0, 'floor') | int) if n else 0 %}
+{% set empty = 5 - full %}
+<span class="stars {{ cls }}" aria-label="{{ full }} out of 5 stars">
+  {%- for i in range(full) -%}<span class="star-filled">★</span>{%- endfor -%}
+  {%- for i in range(empty) -%}<span class="star-empty">★</span>{%- endfor -%}
+</span>
+{% endmacro %}

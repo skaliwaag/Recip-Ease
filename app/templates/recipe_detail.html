@@ -1,7 +1,22 @@
 {% extends "base.html" %}
+{% from "macros.html" import stars %}
 {% block title %}{{ recipe.title }} — Recip-Ease{% endblock %}
 
 {% block content %}
+
+{# Same category→CSS-class map as index.html — kept in sync manually.
+   Both live in templates so the backend stays presentation-free. #}
+{% set cat_color = {
+  'Breakfast':    'cat-breakfast',
+  'Lunch':        'cat-lunch',
+  'Dinner':       'cat-dinner',
+  'Dessert':      'cat-dessert',
+  'Snack':        'cat-snack',
+  'Appetizer':    'cat-appetizer',
+  'Comfort Food': 'cat-comfort',
+  'Comfort':      'cat-comfort'
+} %}
+
 <nav aria-label="breadcrumb" class="mb-3">
   <ol class="breadcrumb">
     <li class="breadcrumb-item"><a href="{{ url_for('index') }}">Recipes</a></li>
@@ -12,41 +27,62 @@
 <div class="row">
   <!-- Left: Recipe Info -->
   <div class="col-md-8">
-    <div class="d-flex justify-content-between align-items-start">
-      <h2>{{ recipe.title }}</h2>
+    <div class="d-flex justify-content-between align-items-start mb-2">
+      <h2 class="mb-0">{{ recipe.title }}</h2>
       <form method="POST" action="{{ url_for('recipe_delete', recipe_id=recipe._id) }}"
             onsubmit="return confirm('Delete this recipe?')">
         <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
       </form>
     </div>
 
-    {% if recipe.category %}
-      <span class="badge bg-secondary mb-2">{{ recipe.category.name }}</span>
-    {% endif %}
-    {% for f in recipe.dietaryFlags %}
-      <span class="badge bg-success mb-2">{{ f }}</span>
-    {% endfor %}
+    <!-- Category and dietary badges -->
+    <div class="mb-3">
+      {% if recipe.category %}
+        {# Category badge uses the color map; falls back to bg-secondary for unknown categories #}
+        <span class="badge {{ cat_color.get(recipe.category.name, 'bg-secondary') }} me-1">
+          {{ recipe.category.name }}
+        </span>
+      {% endif %}
+      {% for f in recipe.dietaryFlags %}
+        {# Terracotta dietary badges — consistent with the card grid #}
+        <span class="badge badge-dietary me-1">{{ f }}</span>
+      {% endfor %}
+    </div>
 
-    <p class="mt-2">{{ recipe.description }}</p>
+    <p>{{ recipe.description }}</p>
 
-    <div class="row text-center my-3">
+    <!-- Stat boxes: pale green background ties these to the brand palette.
+         Icons from Bootstrap Icons make each metric scannable at a glance. -->
+    <div class="row text-center my-3 g-2">
       <div class="col">
-        <div class="fw-bold">{{ recipe.prepTime }} min</div>
-        <div class="text-muted small">Prep</div>
-      </div>
-      <div class="col">
-        <div class="fw-bold">{{ recipe.cookTime }} min</div>
-        <div class="text-muted small">Cook</div>
-      </div>
-      <div class="col">
-        <div class="fw-bold">{{ recipe.servings }}</div>
-        <div class="text-muted small">Servings</div>
-      </div>
-      <div class="col">
-        <div class="fw-bold">
-          {% if recipe.avgRating %}{{ "%.1f"|format(recipe.avgRating) }} / 5{% else %}—{% endif %}
+        <div class="stat-box">
+          <div class="stat-value"><i class="bi bi-clock"></i>{{ recipe.prepTime }} min</div>
+          <div class="stat-label">Prep</div>
         </div>
-        <div class="text-muted small">Avg Rating</div>
+      </div>
+      <div class="col">
+        <div class="stat-box">
+          <div class="stat-value"><i class="bi bi-fire"></i>{{ recipe.cookTime }} min</div>
+          <div class="stat-label">Cook</div>
+        </div>
+      </div>
+      <div class="col">
+        <div class="stat-box">
+          <div class="stat-value"><i class="bi bi-people-fill"></i>{{ recipe.servings }}</div>
+          <div class="stat-label">Servings</div>
+        </div>
+      </div>
+      <div class="col">
+        <div class="stat-box">
+          {% if recipe.avgRating %}
+            {# stars() macro from macros.html renders filled/empty ★ characters #}
+            <div class="stat-value">{{ stars(recipe.avgRating, 'rating-sm') }}</div>
+            <div class="stat-label">{{ "%.1f"|format(recipe.avgRating) }} / 5</div>
+          {% else %}
+            <div class="stat-value" style="color: var(--re-taupe);">—</div>
+            <div class="stat-label">No ratings</div>
+          {% endif %}
+        </div>
       </div>
     </div>
 
@@ -76,7 +112,9 @@
     {% endif %}
 
     {% if recipe.author %}
-      <p class="text-muted small mt-3">Added by <strong>{{ recipe.author.name }}</strong></p>
+      <p class="small mt-3" style="color: var(--re-taupe);">
+        Added by <strong>{{ recipe.author.name }}</strong>
+      </p>
     {% endif %}
   </div>
 
@@ -118,22 +156,24 @@
       {% for review in recipe.reviews %}
       <div class="card mb-2">
         <div class="card-body py-2 px-3">
-          <div class="d-flex justify-content-between">
-            <strong>{{ review.rating }}/5</strong>
+          <div class="d-flex justify-content-between align-items-center">
+            {# Star display on reviews — rating-sm keeps them compact #}
+            {{ stars(review.rating, 'rating-sm') }}
             <form method="POST" action="{{ url_for('review_delete', review_id=review._id) }}">
               <input type="hidden" name="recipe_id" value="{{ recipe._id }}">
               <button type="submit" class="btn btn-sm btn-link text-danger p-0">Remove</button>
             </form>
           </div>
           {% if review.comment %}
-            <p class="mb-0 small">{{ review.comment }}</p>
+            <p class="mb-0 small mt-1">{{ review.comment }}</p>
           {% endif %}
         </div>
       </div>
       {% endfor %}
     {% else %}
-      <p class="text-muted small">No reviews yet.</p>
+      <p class="small" style="color: var(--re-taupe);">No reviews yet.</p>
     {% endif %}
   </div>
 </div>
+
 {% endblock %}

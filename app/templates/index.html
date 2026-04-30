@@ -2,6 +2,21 @@
 {% block title %}Recipes — Recip-Ease{% endblock %}
 
 {% block content %}
+
+{# Map category names to CSS classes defined in style.css.
+   Kept here rather than in the route so the backend stays presentation-free.
+   Fallback to 'bg-secondary' covers any category added later without a mapping. #}
+{% set cat_color = {
+  'Breakfast':    'cat-breakfast',
+  'Lunch':        'cat-lunch',
+  'Dinner':       'cat-dinner',
+  'Dessert':      'cat-dessert',
+  'Snack':        'cat-snack',
+  'Appetizer':    'cat-appetizer',
+  'Comfort Food': 'cat-comfort',
+  'Comfort':      'cat-comfort'
+} %}
+
 <div class="d-flex justify-content-between align-items-center mb-3">
   <h2>Recipes</h2>
   <a href="{{ url_for('recipe_new') }}" class="btn btn-primary">+ Add Recipe</a>
@@ -48,7 +63,8 @@
   <div class="row row-cols-1 row-cols-md-3 g-3">
     {% for recipe in recipes %}
     <div class="col">
-      <div class="card h-100">
+      <!-- card-accent adds the green top stripe defined in style.css -->
+      <div class="card h-100 card-accent">
         <div class="card-body">
           <h5 class="card-title">
             <a href="{{ url_for('recipe_detail', recipe_id=recipe._id) }}" class="text-decoration-none">
@@ -56,22 +72,51 @@
             </a>
           </h5>
           <p class="card-text text-muted small">{{ recipe.description[:100] }}{% if recipe.description|length > 100 %}…{% endif %}</p>
-          {% if recipe.dietaryFlags %}
-            <div>
-              {% for f in recipe.dietaryFlags %}
-                <span class="badge bg-success me-1">{{ f }}</span>
-              {% endfor %}
-            </div>
-          {% endif %}
+
+          <div class="mt-2">
+            {# Category badge — color driven by cat_color map above #}
+            {% if recipe.categoryId is defined %}
+              {# categoryId is an ObjectId string here; we can't look up the name
+                 without a join, so the card shows dietary flags and tags only.
+                 Category is shown on the detail page where we have the full join. #}
+            {% endif %}
+
+            {# Dietary flag badges use badge-dietary (terracotta) rather than
+               bg-success so they read as "food attribute" not "status passed" #}
+            {% for f in recipe.get('dietaryFlags', []) %}
+              <span class="badge badge-dietary me-1">{{ f }}</span>
+            {% endfor %}
+
+            {% for tag in recipe.get('tags', []) %}
+              <span class="badge bg-light text-dark border me-1">{{ tag }}</span>
+            {% endfor %}
+          </div>
         </div>
-        <div class="card-footer text-muted small">
-          Prep: {{ recipe.prepTime }} min &nbsp;|&nbsp; Cook: {{ recipe.cookTime }} min &nbsp;|&nbsp; Serves: {{ recipe.servings }}
+        <div class="card-footer small" style="color: var(--re-taupe);">
+          <i class="bi bi-clock"></i> {{ recipe.prepTime }}m prep
+          &nbsp;·&nbsp;
+          <i class="bi bi-fire"></i> {{ recipe.cookTime }}m cook
+          &nbsp;·&nbsp;
+          <i class="bi bi-people-fill"></i> {{ recipe.servings }}
         </div>
       </div>
     </div>
     {% endfor %}
   </div>
+
 {% else %}
-  <p class="text-muted">No recipes found.</p>
+  {# Centered empty state is less abrupt than a bare "No recipes found." line.
+     The icon gives a visual anchor so the page doesn't look broken. #}
+  <div class="empty-state">
+    <div class="empty-icon">🍽️</div>
+    {% if q or flag or category %}
+      <div class="empty-title">No recipes match those filters.</div>
+      <p class="small"><a href="{{ url_for('index') }}">Clear filters</a> to see all recipes.</p>
+    {% else %}
+      <div class="empty-title">No recipes yet.</div>
+      <p class="small"><a href="{{ url_for('recipe_new') }}">Add the first one.</a></p>
+    {% endif %}
+  </div>
 {% endif %}
+
 {% endblock %}

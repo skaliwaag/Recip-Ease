@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% from "macros.html" import stars %}
 {% block title %}Dashboard — Recip-Ease{% endblock %}
 
 {% block content %}
@@ -9,11 +10,15 @@
   <!-- Recipes per Category -->
   <div class="col-md-4">
     <div class="card h-100">
-      <div class="card-header fw-bold">Recipes by Category</div>
+      <div class="card-header fw-bold">
+        <i class="bi bi-grid-3x3-gap me-1" style="color: var(--re-green);"></i>
+        Recipes by Category
+      </div>
       <ul class="list-group list-group-flush">
         {% for item in recipes_per_category %}
         <li class="list-group-item d-flex justify-content-between align-items-center">
           {{ item.name or "Uncategorized" }}
+          <!-- bg-primary picks up our re-green override from style.css -->
           <span class="badge bg-primary rounded-pill">{{ item.count }}</span>
         </li>
         {% endfor %}
@@ -24,16 +29,23 @@
   <!-- Top Rated -->
   <div class="col-md-4">
     <div class="card h-100">
-      <div class="card-header fw-bold">Top Rated Recipes</div>
+      <div class="card-header fw-bold">
+        <i class="bi bi-star-fill me-1" style="color: var(--re-terra);"></i>
+        Top Rated Recipes
+      </div>
       <ul class="list-group list-group-flush">
         {% for item in top_rated %}
-        <li class="list-group-item d-flex justify-content-between align-items-center">
-          <a href="{{ url_for('recipe_detail', recipe_id=item._id) }}" class="text-decoration-none">
-            {{ item.title }}
-          </a>
-          <span class="badge bg-warning text-dark rounded-pill">
-            {{ "%.1f"|format(item.avgRating) }} / 5
-          </span>
+        <li class="list-group-item">
+          <div class="d-flex justify-content-between align-items-center">
+            <a href="{{ url_for('recipe_detail', recipe_id=item._id) }}" class="text-decoration-none">
+              {{ item.title }}
+            </a>
+            {# Stars macro renders the visual rating; numeric label follows for precision #}
+            <span class="ms-2 text-nowrap">
+              {{ stars(item.avgRating, 'rating-sm') }}
+              <span class="small ms-1" style="color: var(--re-taupe);">{{ "%.1f"|format(item.avgRating) }}</span>
+            </span>
+          </div>
         </li>
         {% endfor %}
       </ul>
@@ -43,14 +55,19 @@
   <!-- Most Saved -->
   <div class="col-md-4">
     <div class="card h-100">
-      <div class="card-header fw-bold">Most Bookmarked</div>
+      <div class="card-header fw-bold">
+        <i class="bi bi-bookmark-fill me-1" style="color: var(--re-green);"></i>
+        Most Bookmarked
+      </div>
       <ul class="list-group list-group-flush">
         {% for item in most_saved %}
         <li class="list-group-item d-flex justify-content-between align-items-center">
           <a href="{{ url_for('recipe_detail', recipe_id=item._id) }}" class="text-decoration-none">
             {{ item.title }}
           </a>
-          <span class="badge bg-success rounded-pill">{{ item.saveCount }} saves</span>
+          <span class="badge bg-primary rounded-pill">
+            <i class="bi bi-bookmark-fill me-1"></i>{{ item.saveCount }}
+          </span>
         </li>
         {% endfor %}
       </ul>

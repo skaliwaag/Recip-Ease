@@ -1,6 +1,7 @@
 venv/
 .env
 .vs/
+docs/
 worklog.txt
 __pycache__/
 *.pyc
@@ -8,7 +9,9 @@ __pycache__/
 
 # Local-only files
 .claude/
+local/
 *.zip
-*.html
+# /*.html (root-level only) so app/templates/*.html files remain trackable
+/*.html
 *.pdf
 *.docx
