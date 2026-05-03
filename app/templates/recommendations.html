@@ -37,7 +37,7 @@
             </h5>
             <p class="card-text text-muted small">{{ recipe.description[:100] }}{% if recipe.description|length > 100 %}…{% endif %}</p>
             <div class="mt-2">
-              {% for f in recipe.get('dietaryFlags', []) %}
+              {% for f in recipe.get('dietary_flags', []) %}
                 <span class="badge badge-dietary me-1">{{ f }}</span>
               {% endfor %}
               {% for tag in recipe.get('tags', []) %}
@@ -47,9 +47,9 @@
           </div>
           <div class="card-footer small d-flex justify-content-between align-items-center" style="color: var(--re-taupe);">
             <span>
-              <i class="bi bi-clock"></i> {{ recipe.prepTime }}m prep
+              <i class="bi bi-clock"></i> {{ recipe.prep_time }}m prep
               &nbsp;·&nbsp;
-              <i class="bi bi-fire"></i> {{ recipe.cookTime }}m cook
+              <i class="bi bi-fire"></i> {{ recipe.cook_time }}m cook
             </span>
             {% if recipe.avgRating %}
               <span>{{ stars(recipe.avgRating, 'rating-sm') }}</span>

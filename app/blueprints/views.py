@@ -3,8 +3,8 @@ from app.db import get_db
 from bson import ObjectId
 from datetime import datetime, timezone
 
-# these have to match exactly what's stored in mongo — changing them here without
-# updating the db too will silently break the dietary filter
+# These values must match exactly what's stored in the database.
+# Changing them here without updating existing documents will silently break the dietary filter.
 DIETARY_FLAGS = ["vegan", "vegetarian", "gluten-free", "dairy-free", "nut-free"]
 
 
@@ -19,13 +19,14 @@ def register_routes(app):
 
         query = {}
         if q:
-            # $text only works if the text index exists in Atlas — run create_indexes.py first
+            # $text requires a text index on the collection. Run create_indexes.py once
+            # after seeding; without the index, text searches return nothing silently.
             query["$text"] = {"$search": q}
         if flag:
-            query["dietaryFlags"] = flag
+            query["dietary_flags"] = flag
         if category:
             try:
-                query["categoryId"] = ObjectId(category)
+                query["category_id"] = ObjectId(category)
             except Exception:
                 pass
 
@@ -63,8 +64,8 @@ def register_routes(app):
     def recipe_new_post():
         db = get_db()
         try:
-            category_oid = ObjectId(request.form["categoryId"])
-            author_oid   = ObjectId(request.form["authorUserId"])
+            category_oid = ObjectId(request.form["category_id"])
+            author_oid   = ObjectId(request.form["author_user_id"])
         except Exception:
             flash("Invalid category or author selection.", "danger")
             return redirect(url_for("recipe_new"))
@@ -73,17 +74,19 @@ def register_routes(app):
         dietary_flags = request.form.getlist("dietaryFlags")
 
         db.recipes.insert_one({
-            "title":       request.form["title"],
-            "description": request.form["description"],
-            "categoryId":  category_oid,
-            "authorUserId": author_oid,
-            # form sends one ingredient per line, wrapping in dicts to match how the seed stores them
-            "ingredients": [{"name": i.strip()} for i in request.form.get("ingredients", "").split("\n") if i.strip()],
-            "prepTime":    int(request.form.get("prepTime", 0)),
-            "cookTime":    int(request.form.get("cookTime", 0)),
-            "servings":    int(request.form.get("servings", 1)),
-            "tags":        tags,
-            "dietaryFlags": dietary_flags,
+            "title":          request.form["title"],
+            "description":    request.form["description"],
+            "category_id":    category_oid,
+            "author_user_id": author_oid,
+            # The form sends one ingredient per line. We wrap each in a dict to match
+            # the structure the seed uses: {name, amount, unit}. New recipes only get {name}
+            # since the form doesn't ask for amount/unit, but the template handles both shapes.
+            "ingredients":    [{"name": i.strip()} for i in request.form.get("ingredients", "").split("\n") if i.strip()],
+            "prep_time":      int(request.form.get("prep_time", 0)),
+            "cook_time":      int(request.form.get("cook_time", 0)),
+            "servings":       int(request.form.get("servings", 1)),
+            "tags":           tags,
+            "dietary_flags":  dietary_flags,
         })
         flash("Recipe added!", "success")
         return redirect(url_for("index"))
@@ -99,9 +102,9 @@ def register_routes(app):
 
         pipeline = [
             {"$match": {"_id": oid}},
-            {"$lookup": {"from": "categories", "localField": "categoryId",   "foreignField": "_id", "as": "category"}},
-            {"$lookup": {"from": "users",      "localField": "authorUserId", "foreignField": "_id", "as": "author"}},
-            {"$lookup": {"from": "reviews",    "localField": "_id",          "foreignField": "recipeId", "as": "reviews"}},
+            {"$lookup": {"from": "categories", "localField": "category_id",    "foreignField": "_id", "as": "category"}},
+            {"$lookup": {"from": "users",      "localField": "author_user_id", "foreignField": "_id", "as": "author"}},
+            {"$lookup": {"from": "reviews",    "localField": "_id",            "foreignField": "recipe_id", "as": "reviews"}},
             {"$unwind": {"path": "$category", "preserveNullAndEmptyArrays": True}},
             {"$unwind": {"path": "$author",   "preserveNullAndEmptyArrays": True}},
             {"$addFields": {"avgRating": {"$avg": "$reviews.rating"}}},
@@ -111,17 +114,17 @@ def register_routes(app):
             return "Recipe not found", 404
 
         recipe = results[0]
-        recipe["_id"]          = str(recipe["_id"])
-        recipe["categoryId"]   = str(recipe.get("categoryId", ""))
-        recipe["authorUserId"] = str(recipe.get("authorUserId", ""))
+        recipe["_id"]           = str(recipe["_id"])
+        recipe["category_id"]   = str(recipe.get("category_id", ""))
+        recipe["author_user_id"] = str(recipe.get("author_user_id", ""))
         if "category" in recipe:
             recipe["category"]["_id"] = str(recipe["category"]["_id"])
         if "author" in recipe:
             recipe["author"]["_id"] = str(recipe["author"]["_id"])
         for r in recipe.get("reviews", []):
-            r["_id"]      = str(r["_id"])
-            r["userId"]   = str(r["userId"])
-            r["recipeId"] = str(r["recipeId"])
+            r["_id"]       = str(r["_id"])
+            r["user_id"]   = str(r["user_id"])
+            r["recipe_id"] = str(r["recipe_id"])
 
         users = list(db.users.find({}, {"name": 1}).sort("name", 1))
         for u in users:
@@ -136,7 +139,7 @@ def register_routes(app):
         try:
             db.recipes.delete_one({"_id": ObjectId(recipe_id)})
         except Exception:
-            pass  # bad id shouldn't crash the page, just go back to home
+            pass  # malformed id just redirects home rather than showing an error page
         return redirect(url_for("index"))
 
 
@@ -145,7 +148,7 @@ def register_routes(app):
         db = get_db()
         try:
             recipe_oid = ObjectId(recipe_id)
-            user_oid   = ObjectId(request.form["userId"])
+            user_oid   = ObjectId(request.form["user_id"])
             rating     = int(request.form["rating"])
         except Exception:
             flash("Invalid review data.", "danger")
@@ -156,11 +159,11 @@ def register_routes(app):
             return redirect(url_for("recipe_detail", recipe_id=recipe_id))
 
         db.reviews.insert_one({
-            "recipeId":       recipe_oid,
-            "userId":         user_oid,
-            "rating":         rating,
-            "comment":        request.form.get("comment", ""),
-            "reviewDateTime": datetime.now(timezone.utc),
+            "recipe_id":  recipe_oid,
+            "user_id":    user_oid,
+            "rating":     rating,
+            "comment":    request.form.get("comment", ""),
+            "created_at": datetime.now(timezone.utc),
         })
         return redirect(url_for("recipe_detail", recipe_id=recipe_id))
 
@@ -184,19 +187,19 @@ def register_routes(app):
 
             if user:
                 selected_user = {"_id": user_id, "name": user["name"]}
-                dietary_prefs  = user.get("dietaryPreferences", [])
-                fav_categories = user.get("favoriteCategories", [])
+                dietary_prefs  = user.get("dietary_preferences", [])
+                fav_categories = user.get("favorite_categories", [])
 
                 conditions = []
                 if dietary_prefs:
-                    conditions.append({"dietaryFlags": {"$in": dietary_prefs}})
+                    conditions.append({"dietary_flags": {"$in": dietary_prefs}})
                 if fav_categories:
-                    conditions.append({"categoryId": {"$in": fav_categories}})
+                    conditions.append({"category_id": {"$in": fav_categories}})
                 match_filter = {"$or": conditions} if conditions else {}
 
                 pipeline = [
                     {"$match": match_filter},
-                    {"$lookup": {"from": "reviews", "localField": "_id", "foreignField": "recipeId", "as": "reviews"}},
+                    {"$lookup": {"from": "reviews", "localField": "_id", "foreignField": "recipe_id", "as": "reviews"}},
                     {"$addFields": {"avgRating": {"$avg": "$reviews.rating"}, "reviewCount": {"$size": "$reviews"}}},
                     {"$sort": {"avgRating": -1}},
                     {"$limit": 3},

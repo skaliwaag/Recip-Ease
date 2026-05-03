@@ -1,3 +1,6 @@
+# Advanced Feature 1: recommendation engine.
+# GET /recommendations/<user_id> returns up to 3 recipes matched to a user's
+# dietary preferences and favorite categories, ranked by average rating.
 from flask import Blueprint, jsonify
 from app.db import get_db
 from bson import ObjectId
@@ -6,16 +9,16 @@ recommendations_bp = Blueprint("recommendations", __name__)
 
 
 def _serialize(doc):
-    # ObjectIds aren't JSON-serializable — convert everything to strings
+    # Stringify all ObjectId fields before returning as JSON
     doc["_id"] = str(doc["_id"])
-    if "categoryId" in doc:
-        doc["categoryId"] = str(doc["categoryId"])
-    if "authorUserId" in doc:
-        doc["authorUserId"] = str(doc["authorUserId"])
+    if "category_id" in doc:
+        doc["category_id"] = str(doc["category_id"])
+    if "author_user_id" in doc:
+        doc["author_user_id"] = str(doc["author_user_id"])
     for review in doc.get("reviews", []):
-        review["_id"]      = str(review["_id"])
-        review["userId"]   = str(review["userId"])
-        review["recipeId"] = str(review["recipeId"])
+        review["_id"]       = str(review["_id"])
+        review["user_id"]   = str(review["user_id"])
+        review["recipe_id"] = str(review["recipe_id"])
     return doc
 
 
@@ -31,25 +34,30 @@ def get_recommendations(user_id):
     if not user:
         return jsonify({"error": "User not found"}), 404
 
-    dietary_prefs  = user.get("dietaryPreferences", [])
-    fav_categories = user.get("favoriteCategories", [])
+    dietary_prefs  = user.get("dietary_preferences", [])
+    fav_categories = user.get("favorite_categories", [])
 
-    # only add conditions for non-empty arrays — $in with [] matches nothing
+    # Build a filter that matches recipes by dietary flag OR favorite category.
+    # We only add a condition when the array is non-empty because $in: [] matches nothing,
+    # which would return zero results instead of falling back to all recipes.
+    # If neither list has any entries, match_filter stays as {} and the pipeline
+    # runs against all recipes, so new users still get results.
     conditions = []
     if dietary_prefs:
-        conditions.append({"dietaryFlags": {"$in": dietary_prefs}})
+        conditions.append({"dietary_flags": {"$in": dietary_prefs}})
     if fav_categories:
-        conditions.append({"categoryId": {"$in": fav_categories}})
-
-    # {} matches everything, so users with no preferences still get results
+        conditions.append({"category_id": {"$in": fav_categories}})
     match_filter = {"$or": conditions} if conditions else {}
 
     pipeline = [
+        # Stage 1: filter to recipes that match the user's preferences
         {"$match": match_filter},
-        # join reviews so we can compute avgRating in the next stage
-        {"$lookup": {"from": "reviews", "localField": "_id", "foreignField": "recipeId", "as": "reviews"}},
-        # $avg on an empty array returns null, so unreviewed recipes sort last
+        # Stage 2: join the reviews collection so we can compute an average rating
+        {"$lookup": {"from": "reviews", "localField": "_id", "foreignField": "recipe_id", "as": "reviews"}},
+        # Stage 3: compute avgRating and reviewCount from the joined array.
+        # $avg on an empty array returns null, which sorts below any real rating.
         {"$addFields": {"avgRating": {"$avg": "$reviews.rating"}, "reviewCount": {"$size": "$reviews"}}},
+        # Stages 4-5: return the top 3 by rating
         {"$sort": {"avgRating": -1}},
         {"$limit": 3},
     ]

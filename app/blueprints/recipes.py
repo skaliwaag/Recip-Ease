@@ -1,13 +1,17 @@
+# JSON API for recipe CRUD operations.
+# All routes return JSON. ObjectIds are serialized to strings before returning
+# because the bson.ObjectId type is not directly JSON-serializable.
 from flask import Blueprint, jsonify, request
 from app.db import get_db
 from bson import ObjectId
 
-# Blueprint for recipes
 recipes_bp = Blueprint("recipes", __name__)
 
 
 def _serialize(recipe):
-    # Convert ObjectId to string for JSON serialization
+    # MongoDB stores _id, category_id, and author_user_id as ObjectId objects.
+    # jsonify can't handle those directly, so we convert them to strings here
+    # before the response goes out.
     recipe["_id"] = str(recipe["_id"])
     if "category_id" in recipe:
         recipe["category_id"] = str(recipe["category_id"])
@@ -16,52 +20,41 @@ def _serialize(recipe):
     return recipe
 
 
-#--------------------------------
-# READ/FIND ALL recipes
-#--------------------------------
+# ── GET ALL RECIPES ──
+# Returns every recipe sorted alphabetically by title.
 @recipes_bp.route("/recipes", methods=["GET"])
 def get_all_recipes():
-    # Get the database connection
     db = get_db()
-    # Get all recipe documents
     recipes = list(db.recipes.find().sort("title", 1))
-    # Return the list of recipes as JSON
     return jsonify([_serialize(r) for r in recipes]), 200
 
 
-#-------------------------------------
-# READ/FIND ONE recipe by ID
-#-------------------------------------
+# ── GET ONE RECIPE ──
+# Returns a single recipe by its MongoDB _id.
+# Returns 400 if the id string is not a valid ObjectId, 404 if no document matches.
 @recipes_bp.route("/recipes/<recipe_id>", methods=["GET"])
 def get_recipe(recipe_id):
-    # Get the database connection
     db = get_db()
     try:
         oid = ObjectId(recipe_id)
     except Exception:
         return jsonify({"error": "Invalid recipe_id"}), 400
-    # Find and return the recipe document by _id
     recipe = db.recipes.find_one({"_id": oid})
-    # If recipe not found, return 404 error
     if not recipe:
         return jsonify({"error": "Recipe not found"}), 404
-    # Return the recipe document as JSON
     return jsonify(_serialize(recipe)), 200
 
 
-#--------------------------------
-# CREATE/INSERT recipe
-#--------------------------------
+# ── CREATE RECIPE ──
+# Expects a JSON body with all required fields. category_id and author_user_id
+# arrive as plain strings and must be converted to ObjectIds so MongoDB stores
+# proper references instead of raw strings.
 @recipes_bp.route("/recipes", methods=["POST"])
 def create_recipe():
-    # Get the database connection
     db = get_db()
-    # Get the JSON data from the request
     data = request.get_json()
-    # Retrieve recipe fields from the JSON data
     required = ["title", "description", "category_id", "author_user_id", "ingredients", "prep_time", "cook_time", "servings"]
     missing = [f for f in required if f not in data]
-    # Validate required fields
     if missing:
         return jsonify({"error": f"Missing fields: {missing}"}), 400
     try:
@@ -69,59 +62,48 @@ def create_recipe():
         data["author_user_id"] = ObjectId(data["author_user_id"])
     except Exception:
         return jsonify({"error": "Invalid category_id or author_user_id"}), 400
-    # without these, recipes with no tags or flags get skipped by $in filter queries
+    # Default to empty arrays so recipes without tags or flags don't break
+    # any $in filter queries that iterate over those fields.
     data.setdefault("tags", [])
     data.setdefault("dietary_flags", [])
-    # Create the recipe and get the new recipe ID
     result = db.recipes.insert_one(data)
-    # Return a success message with the new recipe ID
     return jsonify({"message": "Recipe created", "recipe_id": str(result.inserted_id)}), 201
 
 
-#--------------------------------
-# UPDATE ONE recipe
-#--------------------------------
+# ── UPDATE RECIPE ──
+# Partial update via $set, so only the fields included in the request body change.
+# Returns 404 if no document with that _id exists.
 @recipes_bp.route("/recipes/<recipe_id>", methods=["PUT"])
 def update_recipe(recipe_id):
-    # Get the database connection
     db = get_db()
     try:
         oid = ObjectId(recipe_id)
     except Exception:
         return jsonify({"error": "Invalid recipe_id"}), 400
-    # Get the JSON data from the request
     data = request.get_json()
-    # Build the recipe update
+    # Convert reference fields to ObjectId if they're being updated
     for field in ["category_id", "author_user_id"]:
         if field in data:
             try:
                 data[field] = ObjectId(data[field])
             except Exception:
                 return jsonify({"error": f"Invalid {field}"}), 400
-    # Update the recipe document by _id and return whether it was modified
     result = db.recipes.update_one({"_id": oid}, {"$set": data})
-    # If no documents were modified, return 404 error
     if result.matched_count == 0:
         return jsonify({"error": "Recipe not found"}), 404
-    # Return success message as JSON
     return jsonify({"message": "Recipe updated successfully", "modified": result.modified_count}), 200
 
 
-#--------------------------------
-# DELETE ONE recipe
-#--------------------------------
+# ── DELETE RECIPE ──
+# Hard delete. Returns 404 if the id didn't match any document.
 @recipes_bp.route("/recipes/<recipe_id>", methods=["DELETE"])
 def delete_recipe(recipe_id):
-    # Get the database connection
     db = get_db()
     try:
         oid = ObjectId(recipe_id)
     except Exception:
         return jsonify({"error": "Invalid recipe_id"}), 400
-    # Delete the recipe document by _id and return whether it was deleted
     result = db.recipes.delete_one({"_id": oid})
-    # If no documents were deleted, return 404 error
     if result.deleted_count == 0:
         return jsonify({"error": "Recipe not found"}), 404
-    # Return success message as JSON
     return jsonify({"message": "Recipe deleted successfully"}), 200

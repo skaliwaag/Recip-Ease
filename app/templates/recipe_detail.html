@@ -43,7 +43,7 @@
           {{ recipe.category.name }}
         </span>
       {% endif %}
-      {% for f in recipe.dietaryFlags %}
+      {% for f in recipe.dietary_flags %}
         {# Terracotta dietary badges — consistent with the card grid #}
         <span class="badge badge-dietary me-1">{{ f }}</span>
       {% endfor %}
@@ -56,13 +56,13 @@
     <div class="row text-center my-3 g-2">
       <div class="col">
         <div class="stat-box">
-          <div class="stat-value"><i class="bi bi-clock"></i>{{ recipe.prepTime }} min</div>
+          <div class="stat-value"><i class="bi bi-clock"></i>{{ recipe.prep_time }} min</div>
           <div class="stat-label">Prep</div>
         </div>
       </div>
       <div class="col">
         <div class="stat-box">
-          <div class="stat-value"><i class="bi bi-fire"></i>{{ recipe.cookTime }} min</div>
+          <div class="stat-value"><i class="bi bi-fire"></i>{{ recipe.cook_time }} min</div>
           <div class="stat-label">Cook</div>
         </div>
       </div>
@@ -128,7 +128,7 @@
         <h6 class="card-title">Leave a Review</h6>
         <form method="POST" action="{{ url_for('review_create', recipe_id=recipe._id) }}">
           <div class="mb-2">
-            <select name="userId" class="form-select form-select-sm" required>
+            <select name="user_id" class="form-select form-select-sm" required>
               <option value="">Select user…</option>
               {% for u in users %}
                 <option value="{{ u._id }}">{{ u.name }}</option>

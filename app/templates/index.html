@@ -75,7 +75,7 @@
 
           <div class="mt-2">
             {# Category badge — color driven by cat_color map above #}
-            {% if recipe.categoryId is defined %}
+            {% if recipe.category_id is defined %}
               {# categoryId is an ObjectId string here; we can't look up the name
                  without a join, so the card shows dietary flags and tags only.
                  Category is shown on the detail page where we have the full join. #}
@@ -83,7 +83,7 @@
 
             {# Dietary flag badges use badge-dietary (terracotta) rather than
                bg-success so they read as "food attribute" not "status passed" #}
-            {% for f in recipe.get('dietaryFlags', []) %}
+            {% for f in recipe.get('dietary_flags', []) %}
               <span class="badge badge-dietary me-1">{{ f }}</span>
             {% endfor %}
 
@@ -93,9 +93,9 @@
           </div>
         </div>
         <div class="card-footer small" style="color: var(--re-taupe);">
-          <i class="bi bi-clock"></i> {{ recipe.prepTime }}m prep
+          <i class="bi bi-clock"></i> {{ recipe.prep_time }}m prep
           &nbsp;·&nbsp;
-          <i class="bi bi-fire"></i> {{ recipe.cookTime }}m cook
+          <i class="bi bi-fire"></i> {{ recipe.cook_time }}m cook
           &nbsp;·&nbsp;
           <i class="bi bi-people-fill"></i> {{ recipe.servings }}
         </div>

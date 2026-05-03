@@ -1,9 +1,12 @@
-# db.py — connects to Atlas and returns the database; called at the top of each route
+# Connects to MongoDB Atlas and returns the database object.
+# Every route that needs to read or write data calls get_db() at the top.
 from pymongo import MongoClient
 import os
 
-# new client every call is fine for a class project, but a real app would reuse
-# one client so the connection pool is shared instead of rebuilt each time
+# A new MongoClient is created on every call, which means a fresh TCP connection
+# each time. For a class project hitting a small Atlas cluster this is fine.
+# A production app would hold one shared client so pymongo can manage its own
+# connection pool across requests.
 def get_db():
     uri = os.getenv("MONGO_URI")
     if not uri:
