@@ -87,6 +87,7 @@ Do not commit `.env` — it is listed in `.gitignore`.
 | POST | `/recipe/<id>/review` | Submit a review (rating 1–5) |
 | POST | `/review/<id>/delete` | Delete a review |
 | GET | `/dashboard` | Dashboard: recipes per category, top-rated, most saved |
+| GET | `/recommendations` | For You page — select a user to see their top 3 recipe recommendations |
 
 ### JSON API
 
