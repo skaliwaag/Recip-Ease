@@ -171,6 +171,15 @@ Returns three aggregated statistics, each from its own pipeline:
 - **Indexes:** text search on recipe title/description/tags; dietary flag filter index; compound unique index on saved recipes; unique index on user email
 - **Aggregation pipelines:** used in recipe detail, recommendations, and all dashboard statistics
 
+## Team Contributions
+
+| Name | Contributions |
+|---|---|
+| Daniel Weidenaar | Team lead. Flask app scaffold, Atlas connection, recommendation engine, dashboard aggregations, full Flask migration, blueprint wiring, views.py frontend scaffold, frontend overhaul (palette, icons, star ratings), create_indexes.py, README, overall coordination. |
+| Terysa Brewer | Flask CRUD blueprints (recipes, users, reviews, meal_plans), HTML templates, CSS styling, .env.example, inline blueprint comments. |
+| Terry McCulley | seed_db.py — all 6 collections (51 users, 7 categories, 27 recipes, 30 reviews, 30 savedRecipes, 27 mealPlans). Initial CRUD route structure. DB design doc Sections 2.1–2.4. |
+| Sydney Roney | All documentation, quality control, work logs, DB design doc assembly and Dropbox uploads, proposal Section 7 (embedded/referenced relationships), MongoDB certification. |
+
 ## AI Assistance Disclosure
 
 A Claude/Anthropic AI agent was used for project planning, codebase scaffolding, rubric compliance checks, and troubleshooting, as well as document formatting assistance. All team members understand and can explain the database design, collection structure, queries, and application logic.
