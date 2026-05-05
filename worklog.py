@@ -25,6 +25,7 @@ Next up:    {next_up}
     if blocked:
         entry += f"Blocked:    {blocked}\n"
 
+    # need utf-8 here or windows defaults to cp1252 and breaks names with special characters
     with open(LOG_FILE, "a", encoding="utf-8") as f:
         f.write(entry)
 

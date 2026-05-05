@@ -61,11 +61,13 @@ Open http://127.0.0.1:5000 in your browser.
   - Top 5 rated recipes (with avg rating and review count)
   - Top 5 most saved recipes
 
-### Recommendations — `GET /recommendations/<user_id>`
-- This is a JSON endpoint. Grab a user `_id` from MongoDB (Atlas UI or compass).
-- Visit `/recommendations/<that_id>` in the browser.
-- You should get a JSON array of up to 3 recipes matching that user's dietary preferences and favorite categories.
+### For You — `GET /recommendations`
+- Click **For You** in the nav bar.
+- Select a user from the dropdown — the page reloads and shows up to 3 recipe cards matching that user's dietary preferences and favorite categories.
 - If the user has no preferences set, all recipes are eligible and the top 3 by rating are returned.
+- Each card links to the full recipe detail page.
+
+**JSON endpoint (optional):** `/recommendations/<user_id>` still returns the same data as JSON if you want to inspect it directly.
 
 ---
 

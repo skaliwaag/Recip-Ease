@@ -1,7 +1,51 @@
-/* Terysa — add your styles here */
+/* ── PALETTE ─────────────────────────────────────────────────────────────
+   Sage green + terracotta + warm cream.
+
+   Green family  — brand identity, nav, buttons, accents
+   Terracotta    — warm highlight color: ratings, dietary badges, active states
+   Cream         — page background (replaces Bootstrap's cold #f8f9fa gray)
+   Taupe         — muted text, secondary labels, empty states
+   Border        — warm light gray for card edges and dividers
+   ──────────────────────────────────────────────────────────────────────── */
+:root {
+  --re-green:        #4a7c59;
+  --re-green-dark:   #2d5a3d;
+  --re-green-mid:    #5a9470;
+  --re-green-light:  #e8f2ec;
+  --re-terra:        #c4693a;
+  --re-terra-light:  #f5ece5;
+  --re-cream:        #fdf6ec;
+  --re-taupe:        #7a6e63;
+  --re-border:       #ddd5cc;
+  --re-text:         #2a2a2a;
+}
+
+/* Override Bootstrap's primary and success tokens at the root level so
+   btn-primary, badge bg-primary, bg-success, etc. all pick up our palette
+   without changing any template markup */
+:root {
+  --bs-primary:         var(--re-green);
+  --bs-primary-rgb:     74, 124, 89;
+  --bs-success:         var(--re-green);
+  --bs-success-rgb:     74, 124, 89;
+  --bs-link-color:      var(--re-green);
+  --bs-link-color-rgb:  74, 124, 89;
+  --bs-border-color:    var(--re-border);
+}
 
 body {
-  background-color: #f8f9fa;
+  background-color: var(--re-cream);
+  color: var(--re-text);
+}
+
+
+/* ── NAVBAR ──────────────────────────────────────────────────────────────
+   Dark forest green instead of Bootstrap's default black.
+   Immediately signals food/nature without changing the markup —
+   just adding the re-navbar class in base.html overrides bg-dark.
+   ──────────────────────────────────────────────────────────────────────── */
+.re-navbar {
+  background-color: var(--re-green-dark) !important;
 }
 
 .navbar-brand {
@@ -9,12 +53,131 @@ body {
   letter-spacing: 0.5px;
 }
 
+/* Active page gets a terracotta underline rather than just opacity change,
+   making the current section obvious at a glance */
+.navbar-nav .nav-link.active {
+  color: #fff !important;
+  border-bottom: 2px solid var(--re-terra);
+  padding-bottom: 2px;
+}
+
+
+/* ── CARDS ───────────────────────────────────────────────────────────────
+   Lift on hover signals that cards are clickable links, not static tiles.
+   Transition keeps it subtle — enough to notice, not enough to distract.
+   ──────────────────────────────────────────────────────────────────────── */
 .card {
-  border: none;
-  box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+  border: 1px solid var(--re-border);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.10);
 }
 
 .card-header {
   background-color: #fff;
-  border-bottom: 1px solid #e9ecef;
+  border-bottom: 1px solid var(--re-border);
+}
+
+/* Green top accent stripe applied to recipe cards specifically.
+   Kept as a separate class so dashboard/review cards don't get it. */
+.card-accent {
+  border-top: 3px solid var(--re-green);
+}
+
+
+/* ── STAR RATINGS ────────────────────────────────────────────────────────
+   Terracotta for filled stars — stands out against both white and cream.
+   Empty stars use the border color so they're visible but clearly inactive.
+   .rating-sm reduces size for inline use inside review cards.
+   ──────────────────────────────────────────────────────────────────────── */
+.stars         { letter-spacing: 2px; }
+.star-filled   { color: var(--re-terra); }
+.star-empty    { color: var(--re-border); }
+.rating-sm     { font-size: 0.85rem; letter-spacing: 1px; }
+.rating-lg     { font-size: 1.3rem; letter-spacing: 2px; }
+
+
+/* ── DIETARY BADGES ──────────────────────────────────────────────────────
+   Terracotta instead of Bootstrap success green — dietary labels are
+   attributes, not "good/bad" status indicators, so green is misleading.
+   Terracotta reads as "food property" rather than "passed a check".
+   ──────────────────────────────────────────────────────────────────────── */
+.badge-dietary {
+  background-color: var(--re-terra);
+  color: #fff;
+}
+
+
+/* ── CATEGORY BADGES ─────────────────────────────────────────────────────
+   Each of the 7 seed categories gets a distinct muted color so a Breakfast
+   recipe is immediately distinguishable from a Dinner recipe in the card
+   grid without having to read the label. Colors are chosen to be readable
+   with white text at a small badge size.
+   ──────────────────────────────────────────────────────────────────────── */
+.cat-breakfast  { background-color: #d4943a; color: #fff; }   /* warm amber */
+.cat-lunch      { background-color: #5b8dc0; color: #fff; }   /* sky blue   */
+.cat-dinner     { background-color: #3a6b9e; color: #fff; }   /* deep blue  */
+.cat-dessert    { background-color: #b56b8a; color: #fff; }   /* rose       */
+.cat-snack      { background-color: #d4893a; color: #fff; }   /* orange     */
+.cat-appetizer  { background-color: var(--re-green-mid); color: #fff; }  /* sage */
+.cat-comfort    { background-color: #8a6b4a; color: #fff; }   /* warm brown */
+
+
+/* ── EMPTY STATE ─────────────────────────────────────────────────────────
+   A centered, spaced empty state is less abrupt than a plain one-liner.
+   The large icon provides a visual anchor so the page doesn't look broken.
+   ──────────────────────────────────────────────────────────────────────── */
+.empty-state {
+  text-align: center;
+  padding: 3.5rem 1rem;
+  color: var(--re-taupe);
+}
+
+.empty-state .empty-icon {
+  font-size: 2.8rem;
+  margin-bottom: 0.75rem;
+  opacity: 0.55;
+}
+
+.empty-state .empty-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-bottom: 0.3rem;
+  color: var(--re-taupe);
+}
+
+
+/* ── STAT BOXES (recipe detail) ──────────────────────────────────────────
+   Pale green background ties the prep/cook/servings/rating row to the
+   brand palette. The row was previously plain text — wrapping it in
+   stat-box makes it feel like a designed component rather than metadata.
+   ──────────────────────────────────────────────────────────────────────── */
+.stat-box {
+  background-color: var(--re-green-light);
+  border-radius: 8px;
+  padding: 0.65rem 0.5rem;
+}
+
+.stat-box .stat-value {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--re-green-dark);
+}
+
+.stat-box .stat-label {
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--re-taupe);
+  margin-top: 2px;
+}
+
+.stat-box .bi {
+  font-size: 0.85rem;
+  color: var(--re-green);
+  margin-right: 3px;
 }

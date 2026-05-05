@@ -3,12 +3,14 @@ from dotenv import load_dotenv
 from datetime import datetime
 import os
 
+# explicit path so .env loads correctly no matter where you run this from
 load_dotenv(os.path.join(os.path.dirname(__file__), '.env'))
 
 def seed():
     db = get_db()
 
     # ── CLEAR ──
+    # wipe first so re-running this doesn't double up all the data (don't run on production!)
     db.users.drop()
     db.categories.drop()
     db.recipes.drop()
@@ -29,6 +31,8 @@ def seed():
     ]).inserted_ids
 
     # ── USERS ──
+    # heads up: utcnow() gives a naive datetime (no timezone info) — the blueprints use
+    # datetime.now(timezone.utc) so they don't technically match, but both are UTC
     users = db.users.insert_many([
         { "name": "Maria Santos",        "email": "maria@example.com",                    "dietary_preferences": ["vegetarian", "gluten-free"], "favorite_categories": [categories[0]], "created_at": datetime.utcnow() },
         { "name": "Alice Johnson",        "email": "alice@gmail.com",                      "dietary_preferences": ["vegetarian"],                 "favorite_categories": [],              "created_at": datetime.utcnow() },
